@@ -16,14 +16,28 @@
 
 ---------------------------------------------------------------------------------------------
 
-Class STOCK
+Class InventoryManager
+  Responsibility:
+    - Store a list of Product
+    - GET information of a specific product (price, quantity,...)
+    - Note: this class does not change/alter the value of Product objects
+    - Store database as FileHandling
   Attributes:
-
+    - A private list of Product
+    - A private final file containing database
   Methods:
-    - constructor (tạo object STOCK mới; yêu cầu tất cả attribute phải điền đủ)
-      tạo constructor mặc định (STOCK rỗng) và constructor có tham số
-    - get_all() / làm thêm hàm get cho từng attribute 
-    - set_all(nameStk, cateStk,..., priceStk) / (làm thêm hàm set cho từng attribute)
+    - constructor + loadData()
+    - add a new item
+    - get all items
+    - find item using its ID
+    - load data (from a database to the list of Product)
+    - save data (write to text file database)
+
+
+
+
+
+
 
 Tóm tắt Mô hình Thiết kế (Entity Model)
 1. Product.java (Abstract Class): Chứa id, price, stock.
