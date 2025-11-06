@@ -1,1 +1,15 @@
 # Musical_Store_Management_App
+
+1. App mình là một cái desktop app, dành cho employee/staff. 
+2. UI:
+  - GUI 
+    - Nếu bị dí thì dùng Java Swing 
+    - Nếu không bị dí thì dùng JavaFX
+3. App này có chức năng:
+  - Quản lí các mặt hàng (instrument hoặc accessory)
+  - Quản lí và theo dõi nhân viên
+  - Thu thập thông tin cơ bản của khách hàng để tạo ra ORDER
+  - Khả năng chỉnh sửa mặt hàng (thêm/xóa/sửa object) HOẶC tin chỉnh hệ thống lâu dài
+  - ...
+4. Database:
+  - Xài filehandling
