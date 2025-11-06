@@ -34,6 +34,37 @@ Class InventoryManager
     - save data (write to text file database)
 
 
+---------------------------------------------------------------------------------------------
+
+Class Product
+  Responsibility:
+    - Abstract for the layers Instrument & Accessory
+  Attributes:
+    - id, name, brand, sellingPrice, quantityStock
+  Methods:
+    - get(), set()
+    - checkStock() check for the availability of the item.
+
+---------------------------------------------------------------------------------------------
+
+Class Instrument
+  Responsibility:
+    - Abstract for the layers Guitar, Piano, ...
+  Attributes:
+    - type, color, isElectric
+  Methods:
+    - get(), set()
+
+---------------------------------------------------------------------------------------------
+
+Class Accessory
+  Responsibility:
+  Attributes:
+    - Type (accessories of ... (instru))
+    - color, isElectric
+  Methods:
+    - get(), set()
+
 
 
 
