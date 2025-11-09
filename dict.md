@@ -1,8 +1,9 @@
 # Dictionary for objects' attributes and methods
 
 ## Attributes
-| Class | Attribute | Datatype | Definition |
-|=-----=|=---------=|=--------=|=-----------|
+
+| **Class** | **Attribute** | **Datatype** | **Definition** |
+|-----------|---------------|--------------|----------------|
 | PRODUCT | ID | String | Identity Digit for product |
 | PRODUCT | nameStk | String | Name of product |
 | PRODUCT | cateStk | String | Category of product |
