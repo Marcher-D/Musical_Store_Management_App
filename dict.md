@@ -18,7 +18,7 @@
 | Instrument | mateIns | String | Material of instrument |
 | Instrument | color | String | Color of instrument |
 | Instrument | isElectric | boolean | Electric of Acoustic |
-| **ACCESSORY | | | |
+| **ACCESSORY** | | | |
 | Accessory | cateAcc | String | Category of accessory |
 | Accessory | mateAcc | String | Material if accessory |
 | Accessory | colorAcc | String | Color of accessory |
