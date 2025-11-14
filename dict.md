@@ -10,7 +10,7 @@
 | Product | cateStk | String (Implement by switch case) | Category of product |
 | Product | oriStk | String | Origin of product |
 | Product | brandStk | String | Brand |
-| Product | quaStk | String | Quantity of Stock |
+| Product | quaStk | int | Quantity of Stock |
 | Product | importDate | java.time.LocalDate | Import date |
 | Product | priceStk | double | Price |
 | **INSTRUMENT** | | | |
