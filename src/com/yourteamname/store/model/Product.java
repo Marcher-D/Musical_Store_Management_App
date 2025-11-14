@@ -1,30 +1,31 @@
 package com.yourteamname.store.model;
 
 public abstract class Product {
-    private String id, brand;
+    private String id, nameProduct, cateProduct, brand;
     private double sellingPrice;
     private int quantityInStock;
 
-    public Product(String id, String brand, double price, int quantity){
-        this.id = id;
-        this.brand = brand;
-        this.sellingPrice = price;
-        this.quantityInStock = quantity;
-    }
-
-    public String getBrand(){
+    final public String getBrand(){
         return this.brand;
     }
 
-    public String getId(){
+    final public String getName(){
+        return this.nameProduct;
+    }
+
+    final public String getCate(){
+        return this.cateProduct;
+    }
+
+    final public String getId(){
         return this.id;
     }
 
-    public double getSellingPrice(){
+    final public double getSellingPrice(){
         return this.sellingPrice;
     }
 
-    public int getQuantityInStock(){
+    final public int getQuantityInStock(){
         return this.quantityInStock;
     }
 
