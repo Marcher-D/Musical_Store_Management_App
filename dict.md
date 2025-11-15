@@ -6,13 +6,13 @@
 |-----------|---------------|--------------|----------------|
 | **PRODUCT** | | | |
 | Product | ID | String | Identity Digit for product |
-| Product | nameStk | String | Name of product |
-| Product | cateStk | String (Implement by switch case) | Category of product |
-| Product | oriStk | String | Origin of product |
-| Product | brandStk | String | Brand |
-| Product | quaStk | String | Quantity of Stock |
+| Product | nameProduct | String | Name of product |
+| Product | cateProduct | String (Implement by switch case) | Category of product |
+| Product | origin | String | Origin of product |
+| Product | brand | String | Brand |
+| Product | quantityInStock | int | Quantity of Stock |
 | Product | importDate | java.time.LocalDate | Import date |
-| Product | priceStk | double | Price |
+| Product | sellingPrice | double | Price |
 | **INSTRUMENT** | | | |
 | Instrument | cateIns | String (Implement by switch case) | Category of instrument |
 | Instrument | mateIns | String | Material of instrument |

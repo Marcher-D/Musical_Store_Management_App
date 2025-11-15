@@ -1,19 +1,16 @@
 package com.yourteamname.store.model;
+
 import java.util.Date;
 
 public abstract class Product {
-    private String id, brand;
+    
+    private String id, namePro, catePro, brand, origin; 
     private double sellingPrice;
     private int quantityInStock;
-
-    private String namePro;       // Tên sản phẩm (ví dụ: "Stratocaster")
-    private String catePro;       // Danh mục gốc (ví dụ: "Instrument")
-    private String origin;        // Nguồn gốc (ví dụ: "USA")
-    private Date importDate;      // Ngày nhập hàng
+    private Date importDate; 
 
     public Product(String id, String namePro, String catePro, String origin, 
-                   String brand, int quantityInStock, Date importDate, double sellingPrice)
-    {
+                   String brand, int quantityInStock, Date importDate, double sellingPrice) {
         this.id = id;
         this.namePro = namePro;
         this.catePro = catePro;
@@ -24,37 +21,41 @@ public abstract class Product {
         this.sellingPrice = sellingPrice;
     }
 
-    public String getId(){
+    // --- Getters ---
+    
+    public String getId() {
         return this.id;
     }
 
-    public String getBrand(){
+    public String getBrand() {
         return this.brand;
     }
-
-    public double getSellingPrice(){
+    
+    public double getSellingPrice() {
         return this.sellingPrice;
     }
 
-    public int getQuantityInStock(){
+    public int getQuantityInStock() {
         return this.quantityInStock;
     }
 
     public String getNamePro() {
-        return namePro;
+        return this.namePro;
     }
 
     public String getCatePro() {
-        return catePro;
+        return this.catePro;
     }
 
     public String getOrigin() {
-        return origin;
+        return this.origin;
     }
 
     public Date getImportDate() {
-        return importDate;
+        return this.importDate;
     }
+
+    // --- Setters ---
 
     public void setPrice(double price) {
         this.sellingPrice = price;
@@ -62,6 +63,10 @@ public abstract class Product {
 
     public void setQuantity(int quantity) {
         this.quantityInStock = quantity;
+    }
+    
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public void setNamePro(String namePro) {
