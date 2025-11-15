@@ -1,42 +1,69 @@
 package com.yourteamname.store.model;
+import java.util.Date;
 
 public class Guitar extends Instrument {
-    private String category;
-    private String model_name;
-    private int price;
-    private int stock;
+    private String cateGui;
+    private int strNumGui;
+    private String bodyShapeGui;
 
-    public Guitar(String brand, String type, String category, String model_name, int price, int stock){
-        super(brand, type);
+    public Guitar(
+        // 8 parameters of Product
+        String id, String namePro, String catePro, String origin, 
+        String brand, int quantityInStock, Date importDate, double sellingPrice,
 
-        this.category = category;
-        this.model_name = model_name;
-        this.price = price;
-        this.stock = stock;
+        // 4 parameters of Instrument
+        String mateIns,
+        String cateIns,
+        String colorIns,
+        boolean isElectric,
+
+        // 3 parameters of Guitar
+        String cateGui,
+        int numOfString,
+        String bodyShapeGui
+        ) 
+        
+        {
+            super(id, namePro, catePro, origin, brand, quantityInStock, importDate, sellingPrice,
+                  cateIns, mateIns, colorIns, isElectric);
+
+            this.cateGui = cateGui;
+            this.strNumGui = numOfString;
+            this.bodyShapeGui = bodyShapeGui;
+        }
+
+    public String getGuiCategory(){
+        return this.cateGui;
     }
 
-    public String getCategory(){
-        return this.category;
+    public int getStrNumGui(){
+        return this.strNumGui;
     }
 
-    public String getModel(){
-        return this.model_name;
+    public String getBodyShapeGui(){
+        return this.bodyShapeGui;
     }
 
-    public int getPrice(){
-        return this.price;
+    public void setGuiCategory(String cateGui){
+        this.cateGui = cateGui;
     }
 
-    public int getStock(){
-        return this.stock;
+    public void setNumStrGui(int numStrGui){
+        this.strNumGui = numStrGui;
+    }
+
+    public void setBodyShapeGui(String bodyShapeGui){
+        this.bodyShapeGui = bodyShapeGui;
     }
 
     @Override
     public String getDescription(){
-    return "Type: " + getType() 
-           + " | Brand: " + getBrand() 
-           + " | Model: " + getModel() 
-           + " | Price: $" + getPrice() 
-           + " | Stock: " + getStock();
-    }  
+    return "Guitar ID: " + getId() + 
+        "\n Model: " + getNamePro() +
+        "\n Brand: " + getBrand() +
+        "\n Price: " + getSellingPrice() +
+        "\n Category: " + getGuiCategory() +
+        "\n Number of strings: " + getStrNumGui()+
+        "\n Guitar shape: " + getBodyShapeGui();
+    }
 }

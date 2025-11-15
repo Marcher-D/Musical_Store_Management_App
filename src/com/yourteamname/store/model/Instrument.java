@@ -1,29 +1,60 @@
 package com.yourteamname.store.model;
+import java.util.Date;
 
-public abstract class Instrument {
-    private String type;
-    private String brand;
+public abstract class Instrument extends Product {
+    private String cateIns;
+    private String mateIns;
+    private String colorIns;
+    private boolean isElectric;
 
-    public Instrument(String brand, String type){
-        this.brand = brand;
-        this.type = type;
+    public Instrument(
+
+        // 8 arguments for Product to go into super()
+        String id, String namePro, String catePro, String origin, 
+        String brand, int quantityInStock, Date importDate, double sellingPrice,
+
+        String cateIns,
+        String mateIns,
+        String colorIns,
+        boolean isElectric
+    ) {
+        super(id, namePro, catePro, origin, brand, quantityInStock, importDate, sellingPrice);
+
+        this.cateIns = cateIns;
+        this.mateIns = mateIns;
+        this.colorIns = colorIns;
+        this.isElectric = isElectric;
     }
 
-    String getBrand(){
-        return this.brand;
+    public String getCateIns(){
+        return this.cateIns;
     }
 
-    String getType(){
-        return this.type;
+    public String getMateIns(){
+        return this.mateIns;
     }
 
-    public void setBrand(String brand){
-        this.brand = brand;
+    public String getColorIns(){
+        return this.colorIns;
     }
 
-    public void setType(String type){
-        this.type = type;
+    public boolean isElectric(){
+        return this.isElectric;
     }
 
-    public abstract String getDescription();
+    public void setCateIns(String category){
+        this.cateIns = category;
+    }
+
+    public void setMateIns(String material){
+        this.mateIns = material;
+    }
+
+    public void setColorIns(String color){
+        this.colorIns = color;
+    }
+
+    public void setIsElectric(boolean isElectric){
+        this.isElectric = isElectric;
+    }
 }
