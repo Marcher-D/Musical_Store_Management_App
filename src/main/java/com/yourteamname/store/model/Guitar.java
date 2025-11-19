@@ -48,8 +48,8 @@ public class Guitar extends Instrument {
         this.cateGui = cateGui;
     }
 
-    public void setNumStrGui(int numStrGui){
-        this.strNumGui = numStrGui;
+    public void setStrNumGui(int strNumGui){
+        this.strNumGui = strNumGui;
     }
 
     public void setBodyShapeGui(String bodyShapeGui){
