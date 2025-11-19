@@ -7,8 +7,11 @@
 *.ear
 
 # VS Code files
-.vscode/
-.settings/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+# Giữ lại dòng này để KHÔNG push settings cá nhân của bro lên
+.vscode/settings.json
 
 # OS generated files
 .DS_Store
