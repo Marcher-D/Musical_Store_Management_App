@@ -1,3 +1,16 @@
+# Hướng dẫn Setup cho Team
+
+Để chạy được dự án này, máy các ông cần cài:
+
+1. **Java:** - Cài JDK 11 (để chạy App).
+   - Cài JDK 21 (để VS Code không báo lỗi).
+2. **Maven:** Tải Maven về máy (nếu VS Code lỗi thì trỏ đường dẫn vào).
+3. **SceneBuilder:** Tải và cài đặt SceneBuilder mới nhất.
+4. **VS Code Extensions:** Khi mở project, nó hỏi cài extension thì bấm "Install All" nhé.
+
+**Cách chạy:**
+- Mở Menu Maven bên trái -> Plugins -> javafx -> javafx:run
+
 # Musical_Store_Management_App
 
 1. App mình là một cái desktop app, dành cho employee/staff. 

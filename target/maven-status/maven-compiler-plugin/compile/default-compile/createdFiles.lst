@@ -1,0 +1,12 @@
+com\yourteamname\store\model\DrumKit.class
+com\yourteamname\store\controller\DashboardController.class
+com\yourteamname\store\main\MainApplication.class
+com\yourteamname\store\model\Piano.class
+com\yourteamname\store\model\Product.class
+com\yourteamname\store\service\InventoryManager.class
+com\yourteamname\store\model\Guitar.class
+com\yourteamname\store\model\Keyboard.class
+com\yourteamname\store\App.class
+com\yourteamname\store\model\Customer.class
+com\yourteamname\store\model\Instrument.class
+com\yourteamname\store\model\Order.class
