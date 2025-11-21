@@ -1,13 +1,14 @@
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\model\Customer.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\model\Product.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\App.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\main\MainApplication.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\model\DrumKit.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\model\Guitar.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\model\Order.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\model\Piano.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\model\Keyboard.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\model\Instrument.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\controller\DashboardController.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\service\InventoryManager.java
-c:\Users\phana\Downloads\Winter_Semester_2025\OOP with Java\Musical_Store_Project\src\main\java\com\yourteamname\store\model\Stock.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/Customer.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/Stock.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/Order.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/controller/DashboardController.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/App.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/service/InventoryManager.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/Keyboard.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/Guitar.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/Employee.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/main/MainApplication.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/Piano.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/DrumKit.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/Product.java
+/workspaces/Musical_Store_Management_App/src/main/java/com/yourteamname/store/model/Instrument.java

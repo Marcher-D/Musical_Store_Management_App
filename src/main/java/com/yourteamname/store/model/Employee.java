@@ -16,7 +16,7 @@ public class Employee {
     }
 
     final public String getNameEmp(){
-        return this.nameEmp();
+        return this.nameEmp;
     }
 
     final public String getEID(){
@@ -55,12 +55,11 @@ public class Employee {
         this.hireDate = hireDate;
     }
 
-
     public String getDescription(){
-    return "Name of Customer: " + getnameCUs() + 
-        "\n CSN: " + getCSN() +
-        "\n Phone number: " + getPhoneNum() +
-        "\n Email: " + getEmailCus() +
-        "\n Address: " + getAddCus();
+    return "Name of Employee: " + getNameEmp() + 
+        "\nEID: " + getEID() +
+        "\nPosition: " + getPosEmp() +
+        "\nSalary: " + getSalEmp() +
+        "\nHire date: " + getHireDate();
     }
 }

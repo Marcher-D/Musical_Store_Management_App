@@ -53,9 +53,9 @@ public class Customer {
 
     public String getDescription(){
     return "Name of Customer: " + getNameCus() + 
-        "\n CSN: " + getCSN() +
-        "\n Phone number: " + getPhoneNum() +
-        "\n Email: " + getEmailCus() +
-        "\n Address: " + getAddCus();
+        "\nCSN: " + getCSN() +
+        "\nPhone number: " + getPhoneNum() +
+        "\nEmail: " + getEmailCus() +
+        "\nAddress: " + getAddCus();
     }
 }
