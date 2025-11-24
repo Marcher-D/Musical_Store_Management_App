@@ -1,0 +1,42 @@
+/* nút sidebar */
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-color: #ecf0f1;
+    -fx-border-width: 0px 0px 1px 0px; /* Gạch dưới mỏng */
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 20 10 20;
+}
+
+/* hiệu ứng hover */
+.sidebar-btn:hover {
+    -fx-background-color: #34495E; /* Màu sáng hơn xíu */
+    -fx-border-width: 0px 0px 1px 4px; /* Thêm vạch trái */
+    -fx-border-color: #ecf0f1 #ecf0f1 #ecf0f1 #3498DB; /* Vạch trái màu xanh */
+}
+
+/* nút đang được chọn */
+.active {
+    -fx-background-color: #2980B9; /* Xanh dương nổi bật */
+    -fx-text-fill: white;
+    -fx-border-width: 0px 0px 1px 4px;
+    -fx-border-color: #ecf0f1 #ecf0f1 #ecf0f1 #E67E22; /* Vạch trái màu cam */
+}
+
+/* Style cho cái khung Form nhập liệu */
+.form-wrapper {
+    -fx-background-color: white; /* Nền trắng */
+    -fx-background-radius: 10;   /* Bo góc */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0); /* Đổ bóng */
+    -fx-padding: 20; /* Cách lề nội dung */
+}
+
+/* Style cho chữ Label trong Form (để chắc chắn nó không bị màu trắng) */
+.form-label {
+    -fx-text-fill: #2c3e50; /* Màu xanh đen đậm */
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}

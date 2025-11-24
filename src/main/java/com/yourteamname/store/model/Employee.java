@@ -35,7 +35,7 @@ public class Employee {
         return this.hireDate;
     }
 
-    public void setNameEmo(String nameEmp){
+    public void setNameEmp(String nameEmp){
         this.nameEmp = nameEmp;
     }
 
@@ -56,10 +56,10 @@ public class Employee {
     }
 
     public String getDescription(){
-    return "Name of Employee: " + getNameEmp() + 
-        "\nEID: " + getEID() +
-        "\nPosition: " + getPosEmp() +
-        "\nSalary: " + getSalEmp() +
-        "\nHire date: " + getHireDate();
+    return "Employee ID: " + getEID() +
+    "\nName: " + getNameEmp() + 
+    "\n Position: " + getPosEmp() + 
+    "\n Salary: " + getSalEmp() + 
+    "\n Hire Date: " + getHireDate();
     }
 }
