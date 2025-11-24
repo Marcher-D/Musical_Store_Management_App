@@ -1,0 +1,81 @@
+Musical_Store_Management_App
+│   dict.md
+│   pom.xml
+│   README.md
+│
+├───src
+│   │   .gitignore
+│   │
+│   ├───.vscode
+│   │       extensions.json
+│   │
+│   └───main
+│       ├───java
+│       │   └───com
+│       │       └───yourteamname
+│       │           └───store
+│       │               │   App.java
+│       │               │
+│       │               ├───controller
+│       │               │       DashboardController.java
+│       │               │
+│       │               ├───main
+│       │               │       MainApplication.java
+│       │               │
+│       │               ├───model
+│       │               │       Customer.java
+│       │               │       DrumKit.java
+│       │               │       Employee.java
+│       │               │       Guitar.java
+│       │               │       Instrument.java
+│       │               │       Keyboard.java
+│       │               │       Order.java
+│       │               │       Piano.java
+│       │               │       Product.java
+│       │               │       Stock.java
+│       │               │
+│       │               └───service
+│       │                       InventoryManager.java
+│       │
+│       └───resources
+│           └───view
+│                   Dashboard.fxml
+│
+└───target
+    ├───classes
+    │   ├───com
+    │   │   └───yourteamname
+    │   │       └───store
+    │   │           │   App.class
+    │   │           │
+    │   │           ├───controller
+    │   │           │       DashboardController.class
+    │   │           │
+    │   │           ├───main
+    │   │           │       MainApplication.class
+    │   │           │
+    │   │           ├───model
+    │   │           │       Customer.class
+    │   │           │       DrumKit.class
+    │   │           │       Employee.class
+    │   │           │       Guitar.class
+    │   │           │       Instrument.class
+    │   │           │       Keyboard.class
+    │   │           │       Order.class
+    │   │           │       Piano.class
+    │   │           │       Product.class
+    │   │           │
+    │   │           └───service
+    │   │                   InventoryManager.class
+    │   │
+    │   └───view
+    │           Dashboard.fxml
+    │
+    ├───maven-status
+    │   └───maven-compiler-plugin
+    │       └───compile
+    │           └───default-compile
+    │                   createdFiles.lst
+    │                   inputFiles.lst
+    │
+    └───test-classes
