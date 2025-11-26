@@ -6,11 +6,20 @@ public class Order {
     private String status, deliAdd;
     private Date sellDate, deliDate;
 
-    public Order(String status, String deliAdd, Date sellDate, Date deliDate){
+    private Customer customer;
+    private Employee employee; 
+
+    public Order(String status, String deliAdd, Date sellDate, Date deliDate, 
+                 Customer customer, Employee employee) {
+        
         this.status = status;
         this.deliAdd = deliAdd;
         this.sellDate = sellDate;
         this.deliDate = deliDate;
+        
+        // Gán các đối tượng Composition
+        this.customer = customer;
+        this.employee = employee; 
     }
 
     final public String getStatus(){
@@ -45,10 +54,20 @@ public class Order {
         this.deliDate = deliDate;
     }
 
+    final public Customer getCustomer() {
+        return this.customer;
+    }
+
+    final public Employee getEmployee() {
+        return this.employee;
+    }
+    
     public String getDescription(){
     return "Status: " + getStatus() + 
         "\nSelling Date: " + getSellDate() +
         "\nDelivering Date: " + getDeliDate() +
-        "\nDelivering Address: " + getDeliAdd();
+        "\nDelivering Address: " + getDeliAdd() +
+        "\nCSN: " + this.customer.getCSN() +
+        "\nEID: " + this.employee.getEID();
     }
 }
