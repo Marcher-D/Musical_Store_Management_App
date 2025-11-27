@@ -17,7 +17,7 @@ public class App extends Application {
     // Khai báo lại các hằng số kết nối DB để sử dụng trong phương thức test
     private static final String DB_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_USER = "root";       
-    private static final String DB_PASSWORD = "Peter@18122005"; // *** THAY THẾ BẰNG MẬT KHẨU THỰC TẾ CỦA BẠN ***
+    private static final String DB_PASSWORD = "passcode"; // *** THAY THẾ BẰNG MẬT KHẨU THỰC TẾ CỦA BẠN ***
     private static final String DATABASE_NAME = "musical_store_db";
 
 
