@@ -2,6 +2,7 @@ Musical_Store_Management_App
 │   dict.md
 │   pom.xml
 │   README.md
+│   structure.txt
 │
 ├───src
 │   │   .gitignore
@@ -19,10 +20,15 @@ Musical_Store_Management_App
 │       │               ├───controller
 │       │               │       DashboardController.java
 │       │               │
+│       │               ├───data
+│       │               ├───db
+│       │               │       schema.sql
+│       │               │
 │       │               ├───main
 │       │               │       MainApplication.java
 │       │               │
 │       │               ├───model
+│       │               │       Accessory.java
 │       │               │       Customer.java
 │       │               │       DrumKit.java
 │       │               │       Employee.java
@@ -32,17 +38,20 @@ Musical_Store_Management_App
 │       │               │       Order.java
 │       │               │       Piano.java
 │       │               │       Product.java
-│       │               │       Stock.java
 │       │               │
 │       │               └───service
 │       │                       InventoryManager.java
 │       │
 │       └───resources
+│           │   style.css
+│           │
 │           └───view
 │                   Dashboard.fxml
 │
 └───target
     ├───classes
+    │   │   style.css
+    │   │
     │   ├───com
     │   │   └───yourteamname
     │   │       └───store
@@ -56,12 +65,9 @@ Musical_Store_Management_App
     │   │           │
     │   │           ├───model
     │   │           │       Customer.class
-    │   │           │       DrumKit.class
-    │   │           │       Employee.class
     │   │           │       Guitar.class
     │   │           │       Instrument.class
     │   │           │       Keyboard.class
-    │   │           │       Order.class
     │   │           │       Piano.class
     │   │           │       Product.class
     │   │           │
@@ -71,11 +77,11 @@ Musical_Store_Management_App
     │   └───view
     │           Dashboard.fxml
     │
-    ├───maven-status
-    │   └───maven-compiler-plugin
-    │       └───compile
-    │           └───default-compile
-    │                   createdFiles.lst
-    │                   inputFiles.lst
-    │
-    └───test-classes
+    ├───generated-sources
+    │   └───annotations
+    └───maven-status
+        └───maven-compiler-plugin
+            └───compile
+                └───default-compile
+                        createdFiles.lst
+                        inputFiles.lst

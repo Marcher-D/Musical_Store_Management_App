@@ -12,8 +12,8 @@ public class Guitar extends Instrument {
         String brand, int quantityInStock, Date importDate, double sellingPrice,
 
         // 4 parameters of Instrument
-        String mateIns,
         String cateIns,
+        String mateIns,
         String colorIns,
         boolean isElectric,
 

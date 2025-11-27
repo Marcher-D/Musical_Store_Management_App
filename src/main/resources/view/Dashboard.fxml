@@ -5,6 +5,7 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -22,7 +23,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yourteamname.store.controller.DashboardController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.yourteamname.store.controller.DashboardController">
+   
+   <!-- SIDEBAR (BÊN TRÁI) -->
    <left>
       <VBox minWidth="250.0" prefHeight="400.0" prefWidth="250.0" style="-fx-background-color: #2C3E50;" BorderPane.alignment="CENTER">
          <children>
@@ -32,10 +35,13 @@
          </children>
       </VBox>
    </left>
+
+   <!-- MAIN CONTENT (GIỮA) -->
    <center>
       <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             
+            <!-- VIEW 1: HOME DASHBOARD -->
             <AnchorPane fx:id="homeView" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ecf0f1;">
                <children>
                   <HBox alignment="TOP_CENTER" layoutX="275.0" layoutY="20.0" prefHeight="100.0" prefWidth="200.0" spacing="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
@@ -82,6 +88,8 @@
                   </AreaChart>
                </children>
             </AnchorPane>
+
+            <!-- VIEW 2: PRODUCT LIST -->
             <AnchorPane>
                <children>
                   <TableView fx:id="productTable" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
@@ -96,12 +104,20 @@
                   <Button fx:id="btnAddProduct" layoutX="33.0" layoutY="14.0" mnemonicParsing="false" onAction="#showAddProductForm" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" text="Add New Product" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
                </children>
             </AnchorPane>
+
+            <!-- VIEW 3: ADD PRODUCT FORM (Overlay) -->
             <AnchorPane fx:id="addProductView" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: rgba(0, 0, 0, 0.5);" visible="false" StackPane.alignment="CENTER">
                <children>
-                  <Label text="Add New Instrument" />
-                  <VBox alignment="CENTER" prefWidth="600.0" spacing="10.0" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);: white;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
+                  <VBox alignment="TOP_CENTER" prefWidth="600.0" spacing="10.0" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
                      <children>
-                        <TitledPane text="I. Product Information">
+                         <Label text="THÊM SẢN PHẨM MỚI" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #34495e;">
+                              <VBox.margin>
+                                 <Insets bottom="10.0" />
+                              </VBox.margin>
+                           </Label>
+                        
+                        <!-- SECTION 1: Product Information (Dữ liệu chung) -->
+                        <TitledPane expanded="true" text="I. THÔNG TIN CHUNG SẢN PHẨM">
                            <graphic>
                               <GridPane hgap="10.0" vgap="10.0">
                                 <columnConstraints>
@@ -124,15 +140,15 @@
                                        </font>
                                     </Label>
                                     <TextField fx:id="txtNamePro" promptText="Enter Product Name" GridPane.columnIndex="1" />
-                                    <Label layoutX="10.0" layoutY="6.0" styleClass="form-label" text="Category" GridPane.rowIndex="1" />
+                                    <Label layoutX="10.0" layoutY="6.0" styleClass="form-label" text="Category (Major)" GridPane.rowIndex="1" />
                                     <ComboBox fx:id="cbCatePro" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Label layoutX="10.0" layoutY="6.0" styleClass="form-label" text="Origin" GridPane.rowIndex="2" />
-                                    <TextField fx:id="txtOrigin" layoutX="10.0" layoutY="2.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <Label layoutX="10.0" layoutY="27.0" styleClass="form-label" text="Brand" GridPane.rowIndex="3" />
-                                    <TextField fx:id="txtBrand" layoutX="110.0" layoutY="23.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                    <Label layoutX="10.0" layoutY="37.0" styleClass="form-label" text="Quantity" GridPane.rowIndex="4" />
-                                    <TextField fx:id="txtQuantity" layoutX="110.0" layoutY="33.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                    <Label layoutX="10.0" layoutY="48.0" styleClass="form-label" text="Import Date" GridPane.rowIndex="5" />
+                                    <Label layoutX="10.0" layoutY="27.0" styleClass="form-label" text="Brand" GridPane.rowIndex="2" />
+                                    <TextField fx:id="txtBrand" layoutX="110.0" layoutY="23.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label layoutX="10.0" layoutY="37.0" styleClass="form-label" text="Origin" GridPane.rowIndex="3" />
+                                    <TextField fx:id="txtOrigin" layoutX="110.0" layoutY="33.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <Label layoutX="10.0" layoutY="48.0" styleClass="form-label" text="Quantity" GridPane.rowIndex="4" />
+                                    <TextField fx:id="txtQuantity" layoutX="110.0" layoutY="54.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <Label layoutX="10.0" layoutY="58.0" styleClass="form-label" text="Import Date" GridPane.rowIndex="5" />
                                     <DatePicker fx:id="dpImportDate" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                     <Label layoutX="10.0" layoutY="58.0" styleClass="form-label" text="Selling Price" GridPane.rowIndex="6" />
                                     <TextField fx:id="txtPrice" layoutX="110.0" layoutY="54.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
@@ -143,12 +159,154 @@
                               </GridPane>
                            </graphic>
                         </TitledPane>
-                        <TitledPane animated="false" text="untitled" />
-                        <TitledPane animated="false" text="untitled" />
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        
+                        <!-- SECTION 2: Instrument/Accessory Info -->
+                        <TitledPane fx:id="tpInstrumentInfo" expanded="true" text="II. THÔNG TIN CHUNG (NHẠC CỤ HOẶC PHỤ KIỆN)" VBox.vgrow="SOMETIMES">
+                            <graphic>
+                                <GridPane fx:id="gpInstrumentGeneral" hgap="10.0" vgap="10.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="65.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                        <Label fx:id="lblCateIns" text="Instrument Type (Sub Category)" styleClass="form-label" />
+                                        <TextField fx:id="txtCateIns" promptText="Enter Instrument Type (Guitar, Piano...)" GridPane.columnIndex="1" />
+                                        
+                                        <Label text="Material" styleClass="form-label" GridPane.rowIndex="1" />
+                                        <TextField fx:id="txtMateIns" promptText="Wood, Metal, Plastic..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <Label text="Color" styleClass="form-label" GridPane.rowIndex="2" />
+                                        <TextField fx:id="txtColorIns" promptText="Black, Sunburst, Cherry Red..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <Label fx:id="lblIsElectric" text="Is Electric?" styleClass="form-label" GridPane.rowIndex="3" />
+                                        <CheckBox fx:id="chkIsElectric" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                    </padding>
+                                </GridPane>
+                            </graphic>
+                        </TitledPane>
+                        
+                        <!-- SECTION 3: Detail Info (Dynamic Forms) -->
+                        <TitledPane fx:id="tpDetailInfo" expanded="true" text="III. THÔNG TIN CHI TIẾT" VBox.vgrow="SOMETIMES" visible="true">
+                           <graphic>
+                              <!-- Container for dynamic details -->
+                              <AnchorPane fx:id="apDetailContainer" prefHeight="0" prefWidth="0">
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                                 
+                                 <!-- GUITAR FORM -->
+                                 <GridPane fx:id="gpGuitarDetail" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" hgap="10.0" vgap="10.0" visible="false">
+                                    <columnConstraints>
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="65.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <Label text="Guitar Category" styleClass="form-label" />
+                                    <TextField fx:id="txtCateGui" promptText="Acoustic/Classic/Electric..." GridPane.columnIndex="1" />
+                                    <Label text="Number of Strings" styleClass="form-label" GridPane.rowIndex="1" />
+                                    <TextField fx:id="txtStrNumGui" promptText="Ex: 6, 7, 12" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="Body Shape" styleClass="form-label" GridPane.rowIndex="2" />
+                                    <TextField fx:id="txtBodyShapeGui" promptText="Ex: Dreadnought, Strat, LP..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                 </GridPane>
+
+                                 <!-- PIANO FORM -->
+                                 <GridPane fx:id="gpPianoDetail" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" hgap="10.0" vgap="10.0" visible="false">
+                                    <columnConstraints>
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="65.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <Label text="Piano Category" styleClass="form-label" />
+                                    <TextField fx:id="txtCatePi" promptText="Upright/Grand/Digital" GridPane.columnIndex="1" />
+                                    <Label text="Number of Keys" styleClass="form-label" GridPane.rowIndex="1" />
+                                    <TextField fx:id="txtKeyNumPi" promptText="Ex: 88, 76" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="Has Pedal?" styleClass="form-label" GridPane.rowIndex="2" />
+                                    <CheckBox fx:id="chkHasPedal" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                 </GridPane>
+
+                                 <!-- KEYBOARD FORM -->
+                                 <GridPane fx:id="gpKeyboardDetail" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" hgap="10.0" vgap="10.0" visible="false">
+                                    <columnConstraints>
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="65.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <Label text="Keyboard Category" styleClass="form-label" />
+                                    <TextField fx:id="txtCateKey" promptText="Synthesizer/Arranger/Workstation" GridPane.columnIndex="1" />
+                                    <Label text="Number of Keys" styleClass="form-label" GridPane.rowIndex="1" />
+                                    <TextField fx:id="txtKeyNumKey" promptText="Ex: 61, 49" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="Has LCD?" styleClass="form-label" GridPane.rowIndex="2" />
+                                    <CheckBox fx:id="chkHasLCD" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                 </GridPane>
+
+                                 <!-- DRUMKIT FORM -->
+                                 <GridPane fx:id="gpDrumKitDetail" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" hgap="10.0" vgap="10.0" visible="false">
+                                    <columnConstraints>
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="65.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <Label text="Number of Pieces" styleClass="form-label" />
+                                    <TextField fx:id="txtNumOfDrumPieces" promptText="Ex: 5, 7" GridPane.columnIndex="1" />
+                                    <Label text="Number of Cymbals" styleClass="form-label" GridPane.rowIndex="1" />
+                                    <TextField fx:id="txtNumOfCymbals" promptText="Ex: 3, 5" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="Head Material" styleClass="form-label" GridPane.rowIndex="2" />
+                                    <TextField fx:id="txtHeadMaterial" promptText="Mesh, Synthetic, Animal Skin" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label text="Shell Material" styleClass="form-label" GridPane.rowIndex="3" />
+                                    <TextField fx:id="txtShellMaterial" promptText="Maple, Birch, Poplar" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                 </GridPane>
+
+                                 <!-- ACCESSORY FORM -->
+                                 <GridPane fx:id="gpAccessoryDetail" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" hgap="10.0" vgap="10.0" visible="false">
+                                    <columnConstraints>
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="65.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <Label text="Accessory Category" styleClass="form-label" />
+                                    <TextField fx:id="txtCateAcc" promptText="Strings, Tuner, Cable, Drum Stick..." GridPane.columnIndex="1" />
+                                    <Label text="Compatible With" styleClass="form-label" GridPane.rowIndex="1" />
+                                    <TextField fx:id="txtCompatibleWith" promptText="Guitar, Keyboard, All" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="Material (Dùng chung với mục II)" styleClass="form-label" GridPane.rowIndex="2" />
+                                 </GridPane>
+
+                              </AnchorPane>
+                           </graphic>
+                        </TitledPane>
+                        
+                        <!-- BUTTONS -->
+                        <HBox alignment="CENTER" spacing="20.0" prefHeight="50.0" prefWidth="200.0">
                            <children>
-                              <Button fx:id="btnSave" mnemonicParsing="false" onAction="#handleSaveProduct" style="-fx-background-color: #2ecc71;" text="Save Product" />
-                              <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#handleCancelAdd" style="-fx-background-color: #2ecc71;" text="Cancel" />
+                              <Button fx:id="btnSave" mnemonicParsing="false" onAction="#handleSaveProduct" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" text="Save Product" />
+                              <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#handleCancelAdd" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;" text="Cancel" />
                            </children>
                         </HBox>
                      </children>
