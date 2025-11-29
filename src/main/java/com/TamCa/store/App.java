@@ -14,23 +14,21 @@ public class App extends Application {
 
     private static Scene scene;
     
-    // Khai báo lại các hằng số kết nối DB để sử dụng trong phương thức test
+    // Database connection constants used for the test method
     private static final String DB_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_USER = "root";       
-    private static final String DB_PASSWORD = "passcode"; // *** THAY THẾ BẰNG MẬT KHẨU THỰC TẾ CỦA BẠN ***
+    private static final String DB_PASSWORD = "Peter@18122005"; // *** REPLACE WITH YOUR ACTUAL PASSWORD ***
     private static final String DATABASE_NAME = "musical_store_db";
-
 
     @Override
     public void start(Stage stage) throws IOException {
-        // ĐỔI FILE DASHBOARD THÀNH LOGIN
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/view/Login.fxml"));
         Parent root = fxmlLoader.load();
 
-        // Size cho màn hình Login
+        // Size for the Login screen
         Scene scene = new Scene(root, 800, 500); 
 
-        // Nạp CSS (vẫn cần để styling cho Login.fxml)
+        // Load CSS for styling
         String css = this.getClass().getResource("/style.css").toExternalForm();
         scene.getStylesheets().add(css);
 
@@ -40,8 +38,8 @@ public class App extends Application {
     }
 
     /**
-     * Phương thức độc lập để kiểm tra kết nối MySQL.
-     * @return true nếu kết nối thành công, false nếu thất bại.
+     * Independent method to test MySQL connection.
+     * @return true if connection is successful, false if it fails.
      */
     public static boolean testDbConnection() {
         System.out.println("--- Connecting to Database ---");
@@ -64,7 +62,7 @@ public class App extends Application {
 
 
     public static void main(String[] args){
-        // Chạy thử nghiệm kết nối trước khi khởi động JavaFX
+        // Run connection test before starting JavaFX
         testDbConnection(); 
         
         launch();

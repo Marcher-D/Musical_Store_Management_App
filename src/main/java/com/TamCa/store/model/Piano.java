@@ -63,5 +63,5 @@ public class Piano extends Instrument {
                 "\n Price: " + getSellingPrice() +
                 "\n Number of keys: " + getNumOfKey();
         }
-    
+
 }
