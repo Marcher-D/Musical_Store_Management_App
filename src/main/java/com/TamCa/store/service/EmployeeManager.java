@@ -1,0 +1,54 @@
+package com.TamCa.store.service;
+
+import com.TamCa.store.dao.EmployeeDAO;
+import com.TamCa.store.model.Employee;
+import java.util.List;
+
+/**
+ * EmployeeManager: Lớp Logic nghiệp vụ (Service Layer) cho Employee.
+ * Xử lý các quy tắc kinh doanh liên quan đến Nhân viên (Ví dụ: kiểm tra quyền, định mức lương).
+ */
+public class EmployeeManager {
+    
+    private final EmployeeDAO employeeDAO;
+
+    public EmployeeManager() {
+        this.employeeDAO = new EmployeeDAO();
+    }
+    
+    /**
+     * Tải tất cả nhân viên từ CSDL.
+     */
+    public List<Employee> getAllEmployees() {
+        return employeeDAO.getAllEmployees();
+    }
+    
+    /**
+     * Thêm một nhân viên mới.
+     * Có thể thêm logic kiểm tra định mức lương, vị trí hợp lệ tại đây.
+     */
+    public boolean addNewEmployee(Employee employee) {
+        // Ví dụ: Business Rule: Kiểm tra mức lương tối thiểu
+        if (employee.getSalEmp() < 1000) { 
+            System.err.println("Business Rule Violated: Salary cannot be less than 1000.");
+            return false;
+        }
+        return employeeDAO.addEmployee(employee);
+    }
+    
+    /**
+     * Cập nhật thông tin nhân viên.
+     */
+    public boolean updateEmployee(Employee employee) {
+        return employeeDAO.updateEmployee(employee);
+    }
+    
+    /**
+     * Xóa nhân viên theo EID.
+     */
+    public boolean deleteEmployee(String EID) {
+        return employeeDAO.deleteEmployee(EID);
+    }
+    
+    // Thêm các hàm nghiệp vụ khác (ví dụ: tìm kiếm, thống kê hiệu suất) nếu cần
+}
