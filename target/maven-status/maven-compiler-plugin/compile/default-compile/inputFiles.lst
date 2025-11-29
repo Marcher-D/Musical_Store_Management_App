@@ -1,9 +1,12 @@
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\service\InventoryManager.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Employee.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\dao\AccountDAO.java
+D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\dao\CustomerDAO.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\controller\DashboardController.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Instrument.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\App.java
+D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\service\EmployeeManager.java
+D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\dao\EmployeeDAO.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\DrumKit.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Stock.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\main\MainApplication.java
@@ -11,6 +14,7 @@ D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Product
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Guitar.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Customer.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Piano.java
+D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\service\CustomerManager.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Accessory.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Keyboard.java
 D:\pull\Musical_Store_Management_App\src\main\java\com\TamCa\store\model\Order.java

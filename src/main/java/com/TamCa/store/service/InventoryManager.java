@@ -19,11 +19,15 @@ public class InventoryManager {
     // Declare DAO objects
     private final ProductDAO productDAO;
     private final AccountDAO accountDAO;
+    private final CustomerManager customerManager; // MỚI
+    private final EmployeeManager employeeManager; // MỚI
 
     public InventoryManager(){
         // Initialize DAOs
         this.productDAO = new ProductDAO();
         this.accountDAO = new AccountDAO();
+        this.customerManager = new CustomerManager(); // KHỞI TẠO MỚI
+        this.employeeManager = new EmployeeManager(); // KHỞI TẠO MỚI
         
         // ProductDAO automatically sets up the database upon initialization
     }
@@ -35,6 +39,16 @@ public class InventoryManager {
      */
     public String checkLogin(String username, String password) {
         return accountDAO.checkLogin(username, password);
+    }
+
+    // --- CUSTOMER FUNCTIONALITY (Delegated to CustomerManager) --- // MỚI
+    public List<Customer> getAllCustomers() {
+        return customerManager.getAllCustomers();
+    }
+    
+    // --- EMPLOYEE FUNCTIONALITY (Delegated to EmployeeManager) --- // MỚI
+    public List<Employee> getAllEmployees() {
+        return employeeManager.getAllEmployees();
     }
     
     // --- ADD PRODUCT FUNCTIONALITY (Uses ID generation logic and calls ProductDAO) ---
