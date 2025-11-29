@@ -712,6 +712,18 @@ public class InventoryManager {
             e.printStackTrace();
         }
     }
+
+    public void updatePrice(String itemId, String newPriceStr){
+        try {
+            double parsedPrice = Double.parseDouble(newPriceStr);
+
+            this.updatePrice(itemId, parsedPrice);
+        } catch (NumberFormatException e){
+            System.err.println("Error: Value entered is not a valid number");
+
+            throw new IllegalArgumentException("Price must be a number");
+        }
+    }
     
     public double totalValue(){
         String sql = String.format("SELECT SUM(sellingPrice * quantityInStock) AS total FROM %s", PRODUCT_TABLE);
