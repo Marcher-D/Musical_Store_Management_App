@@ -742,4 +742,34 @@ public class InventoryManager {
         }
         return 0;
     }
+
+    // PHƯƠNG THỨC LẤY TỔNG GIÁ TRỊ TỒN KHO THEO THÁNG (Cho biểu đồ)
+    public java.util.Map<String, Double> getMonthlyImportStats() {
+        // LinkedHashMap giữ đúng thứ tự tháng (ORDER BY MONTH(importDate))
+        java.util.Map<String, Double> stats = new java.util.LinkedHashMap<>();
+        
+        // Query SQL: Tính tổng tiền (Giá * Số lượng) gom nhóm theo Tháng nhập hàng
+        String sql = "SELECT MONTHNAME(importDate) as month, SUM(sellingPrice * quantityInStock) as total " +
+                     "FROM Product " +
+                     "GROUP BY MONTH(importDate), MONTHNAME(importDate) " +
+                     "ORDER BY MONTH(importDate)";
+                     
+        try (Connection conn = getConnection(true);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+             
+            while(rs.next()) {
+                String month = rs.getString("month"); 
+                Double total = rs.getDouble("total"); 
+                
+                // Chuẩn hóa tên tháng: January -> Jan
+                if (month != null && month.length() > 3) month = month.substring(0, 3);
+                stats.put(month, total);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi SQL khi tải thống kê tháng: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return stats;
+    }
 }

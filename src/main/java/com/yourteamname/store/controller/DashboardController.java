@@ -68,6 +68,12 @@ public class DashboardController implements Initializable {
     @FXML private TableColumn<Product, String> colBrand;
     @FXML private TableColumn<Product, Double> colPrice;
     @FXML private TableColumn<Product, String> colCategory;
+    @FXML private TableColumn<Product, String> colOrigin;
+    @FXML private TableColumn<Product, Integer> colQuantity;
+    @FXML private TableColumn<Product, Date> colDate;
+    @FXML private TableColumn<Product, String> colInfo;
+
+    @FXML private TextField txtSearchProduct;
 
     // --- CUSTOMER VIEW ---
     @FXML private AnchorPane customerView;
@@ -108,7 +114,8 @@ public class DashboardController implements Initializable {
     // Instrument/Accessory General
     @FXML private Label lblCateIns; 
     @FXML private Label lblIsElectric; 
-    @FXML private TextField txtMateIns, txtColorIns, txtCateIns; 
+    @FXML private TextField txtMateIns, txtColorIns;
+    @FXML private ComboBox<String> cbSubCategory; 
     @FXML private CheckBox chkIsElectric; 
 
     // Detail Containers 
@@ -185,6 +192,12 @@ public class DashboardController implements Initializable {
             });
         }
 
+        if (txtSearchProduct != null){
+            txtSearchProduct.textPropert().addListener((observable, oldValue, newValue) -> {
+                filterProductList(newValue);
+            });
+        }
+
         showHome();
 
 
@@ -198,6 +211,23 @@ public class DashboardController implements Initializable {
         colBrand.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBrand()));        
         colPrice.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getSellingPrice()));
         colCategory.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCatePro()));
+        colOrigin.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getOrigin()));
+        colQuantity.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getQuantityInStock()));
+        colDate.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getImportDate()));
+
+        colInfo.setCellValueFactory(cellData -> {
+            Product p = cellData.getValue();
+            String info = "";
+
+            if (p instanceof com.yourteamname.store.model.Instrument){
+                var i = (com.yourteamname.store.model.Instrument) p;
+                info = i.getColorIns() + " | " + i.getMateIns();
+            } else if (p instanceof com.yourteamname.store.model.Accessory){
+                var a = (com.yourteamname.store.model.Accessory) p;
+                info = a.getColorAcc() + " | " + a.getMateAcc();
+            }
+            return new SimpleStringProperty(info);
+        });
     }
 
     private void loadDataToTable(){
@@ -222,11 +252,13 @@ public class DashboardController implements Initializable {
             cbCatePro.valueProperty().addListener((obs, oldVal, newVal) -> handleMajorCategoryChange(newVal));
         }
         
-        if (txtCateIns != null) {
-            txtCateIns.setOnKeyReleased(event -> {
-                if ("Instrument".equals(cbCatePro.getValue())) {
-                    handleSubCategoryChange(txtCateIns.getText());
-                }
+        if (cbSubCategory != null) {
+            cbSubCategory.setItems(FXCollections.observableArrayList("Guitar", "Piano", "Keyboard", "Drumkit"));
+
+            cbSubCategory.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal != null && "Instrument".equals(cbCatePro.getValue())) {
+                    handleSubCategoryChange(newVal);
+                };
             });
         }
     }
@@ -235,20 +267,25 @@ public class DashboardController implements Initializable {
         boolean isInstrument = "Instrument".equals(majorCategory);
         boolean isAccessory = "Accessory".equals(majorCategory);
         
-        if (tpInstrumentInfo != null) tpInstrumentInfo.setText(isInstrument ? "II. THÔNG TIN CHUNG NHẠC CỤ" : "II. THÔNG TIN CHUNG PHỤ KIỆN");
+        if (tpInstrumentInfo != null) tpInstrumentInfo.setText(isInstrument ? "II. GENERAL INFORMATION FOR INSTRUMENT" : "II. GENERAL INFORMATION FOR ACCESSORY");
         if (lblCateIns != null) lblCateIns.setText(isInstrument ? "Instrument Type (Sub Category)" : "Material");
         if (lblIsElectric != null) lblIsElectric.setVisible(isInstrument);
         if (chkIsElectric != null) chkIsElectric.setVisible(isInstrument);
 
         if (isInstrument) {
-            if (tpDetailInfo != null) tpDetailInfo.setText("III. THÔNG TIN CHI TIẾT NHẠC CỤ");
-            handleSubCategoryChange(txtCateIns.getText()); 
+            if (tpDetailInfo != null) tpDetailInfo.setText("III. DETAILED INFORMATION");
+            if (cbSubCategory != null && cbSubCategory.getValue() != null){
+                handleSubCategoryChange(cbSubCategory.getValue());
+            } else {
+                setAllDetailFormsVisible(false);
+            }
+
         } else if (isAccessory) {
-            if (tpDetailInfo != null) tpDetailInfo.setText("III. THÔNG TIN CHI TIẾT PHỤ KIỆN");
+            if (tpDetailInfo != null) tpDetailInfo.setText("III. DETAILED INFORMATION");
             setAllDetailFormsVisible(false);
             if (gpAccessoryDetail != null) gpAccessoryDetail.setVisible(true);
         } else {
-            if (tpDetailInfo != null) tpDetailInfo.setText("III. CHỌN LOẠI SẢN PHẨM Ở MỤC I");
+            if (tpDetailInfo != null) tpDetailInfo.setText("III. PLEASE CHOOSE PRODUCT TYPE AT SECTION I");
             setAllDetailFormsVisible(false);
         }
     }
@@ -273,7 +310,7 @@ public class DashboardController implements Initializable {
 
     @FXML
     private void handleSaveProduct() {
-        // COPY NGUYÊN SI LOGIC CỦA BẠN ĐỂ ĐẢM BẢO KHỚP DB
+        
         try {
             String name = txtNamePro.getText().trim();
             String brand = txtBrand.getText().trim();
@@ -281,7 +318,7 @@ public class DashboardController implements Initializable {
             String catePro = cbCatePro.getValue(); 
             
             if (name.isEmpty() || brand.isEmpty() || origin.isEmpty() || catePro == null) {
-                showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng điền đầy đủ thông tin chung.");
+                showAlert(Alert.AlertType.WARNING, "Missing Information", "Please fill in all general information.");
                 return;
             }
 
@@ -290,47 +327,71 @@ public class DashboardController implements Initializable {
             LocalDate localDate = dpImportDate.getValue();
             Date importDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
+            // --- B. SAVE PRODUCT BASED ON CATEGORY ---
             if ("Instrument".equals(catePro)) {
                 String mateIns = txtMateIns.getText().trim();
                 String colorIns = txtColorIns.getText().trim();
                 boolean isElectric = chkIsElectric.isSelected();
-                String subCategory = txtCateIns.getText().trim().toLowerCase(); 
 
-                switch (subCategory) {
-                    case "guitar":
-                        inventoryManager.addNewGuitar(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
-                            txtCateGui.getText().trim(), Integer.parseInt(txtStrNumGui.getText().trim()), txtBodyShapeGui.getText().trim());
-                        break;
-                    case "piano":
-                        inventoryManager.addNewPiano(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
-                            txtCatePi.getText().trim(), Integer.parseInt(txtKeyNumPi.getText().trim()), chkHasPedal.isSelected());
-                        break;
-                    case "keyboard":
-                        inventoryManager.addNewKeyboard(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
-                            txtCateKey.getText().trim(), Integer.parseInt(txtKeyNumKey.getText().trim()), chkHasLCD.isSelected());
-                        break;
-                    case "drumkit":
-                        inventoryManager.addNewDrum(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
-                            Integer.parseInt(txtNumOfDrumPieces.getText().trim()), Integer.parseInt(txtNumOfCymbals.getText().trim()), txtHeadMaterial.getText().trim(), txtShellMaterial.getText().trim());
-                        break;
-                    default:
-                        showAlert(Alert.AlertType.WARNING, "Lỗi loại nhạc cụ", "Vui lòng nhập Guitar/Piano/Keyboard/Drumkit vào ô Sub Category.");
-                        return;
+                String subCategory = cbSubCategory.getValue(); 
+
+                if (subCategory == null) {
+                    showAlert(Alert.AlertType.WARNING, "Missing Info", "Please select an Instrument Type.");
+                    return;
                 }
+
+                if (mateIns.isEmpty() || colorIns.isEmpty() || subCategory.isEmpty()) {
+                     throw new IllegalArgumentException("Please fill in all general instrument details.");
+                }
+
+                String subCatLower = subCategory.toLowerCase();
+
+                if (subCatLower.contains("guitar")) {
+                    inventoryManager.addNewGuitar(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
+                        txtCateGui.getText().trim(), Integer.parseInt(txtStrNumGui.getText().trim()), txtBodyShapeGui.getText().trim());
+                
+                } else if (subCatLower.contains("piano")) {
+                    inventoryManager.addNewPiano(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
+                        txtCatePi.getText().trim(), Integer.parseInt(txtKeyNumPi.getText().trim()), chkHasPedal.isSelected());
+                
+                } else if (subCatLower.contains("key")) { 
+                    inventoryManager.addNewKeyboard(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
+                        txtCateKey.getText().trim(), Integer.parseInt(txtKeyNumKey.getText().trim()), chkHasLCD.isSelected());
+                
+                } else if (subCatLower.contains("drum")) { 
+                    inventoryManager.addNewDrum(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
+                        Integer.parseInt(txtNumOfDrumPieces.getText().trim()), Integer.parseInt(txtNumOfCymbals.getText().trim()), txtHeadMaterial.getText().trim(), txtShellMaterial.getText().trim());
+                
+                } else {
+                    showAlert(Alert.AlertType.WARNING, "Invalid Instrument Type", "Please enter 'Guitar', 'Piano', 'Keyboard', or 'Drumkit' in Sub Category.");
+                    return;
+                }
+
             } else if ("Accessory".equals(catePro)) {
+                 
+                 if (txtCateAcc.getText().trim().isEmpty() || txtCompatibleWith.getText().trim().isEmpty() || txtMateIns.getText().trim().isEmpty()) {
+                      throw new IllegalArgumentException("Please fill in all accessory details (Category, Compatible With, Material).");
+                 }
+
                  inventoryManager.addNewAccessory(name, catePro, origin, brand, quantity, importDate, price, 
                     txtCateAcc.getText().trim(), txtMateIns.getText().trim(), txtColorIns.getText().trim(), txtCompatibleWith.getText().trim());
+                
+            } else {
+                 throw new IllegalArgumentException("Error: Major Category not found.");
             }
 
+            // Khi lưu thành công thì nó sẽ làm những việc này
             System.out.println("✅ Saved to DB: " + name);
-            loadDataToTable(); // Reload bảng từ DB
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Product '" + name + "' added successfully!");
+            loadDataToTable();
             handleCancelAdd();
-
+            updateHomeStats();
+            
         } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi nhập liệu", "Giá trị số không hợp lệ.");
+            showAlert(Alert.AlertType.ERROR, "Input Error", "Price, Quantity, and numeric specs must be valid numbers.");
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Lỗi hệ thống", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "System Error", e.getMessage());
         }
     }
 
@@ -432,12 +493,12 @@ public class DashboardController implements Initializable {
         if(txtPrice != null) txtPrice.clear();
         if(txtQuantity != null) txtQuantity.clear();
         if(dpImportDate != null) dpImportDate.setValue(LocalDate.now());
+
         if(cbCatePro != null) cbCatePro.getSelectionModel().selectFirst();
         
         // Reset sub-forms
         if(txtMateIns != null) txtMateIns.clear();
-        if(txtCateIns != null) txtCateIns.clear();
-        // (Thêm clear các trường detail khác nếu cần)
+        if(cbSubCategory != null) cbSubCategory.getSelectionModel().clearSelection();
     }
 
     // --- FAKE DATA LOGIC (GIỮ LẠI CHO EMPLOYEE/CUSTOMER) ---
@@ -474,42 +535,53 @@ public class DashboardController implements Initializable {
         if(lblTotalCus != null) lblTotalCus.setText("1");
     }
 
-    private void setupChart(String type){ 
+    private void setupChart(String type) {
         if (revenueChart == null) return;
 
         revenueChart.getData().clear();
+        revenueChart.setAnimated(false);
         
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName(type);
 
-        switch (type){
+        String[] allMonths = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}; 
+        
+        // Map để lưu trữ dữ liệu nguồn: Key=Tháng, Value=Số liệu
+        java.util.Map<String, Double> sourceData = new java.util.LinkedHashMap<>();
+        
+        // Dữ liệu mock data cần thiết
+        java.util.Map<String, Double> mockData = new java.util.LinkedHashMap<>();
+        mockData.put("Jan", type.equals("Products") ? 50.0 : 10.0);
+        mockData.put("Feb", type.equals("Products") ? 80.0 : 25.0);
+        mockData.put("Mar", type.equals("Products") ? 120.0 : 40.0);
+        mockData.put("Apr", type.equals("Products") ? 90.0 : 55.0);
+        mockData.put("May", type.equals("Products") ? 150.0 : 70.0);
+        // THÊM THÁNG 11 CHO MOCK DATA
+        mockData.put("Nov", type.equals("Products") ? 100.0 : 75.0);
+        
+        
+        switch (type) {
+            case "Revenue":
+                revenueChart.setTitle("Monthly Inventory Value ($)");
+                sourceData = inventoryManager.getMonthlyImportStats(); // <--- Dữ liệu thật từ DB
+                break;
+
             case "Products":
-                revenueChart.setTitle("Monthly Product Import");
-                series.getData().add(new XYChart.Data<>("Jan", 50));
-                series.getData().add(new XYChart.Data<>("Feb", 80));
-                series.getData().add(new XYChart.Data<>("Mar", 120));
-                series.getData().add(new XYChart.Data<>("Apr", 90));
-                series.getData().add(new XYChart.Data<>("May", inventoryManager.getExistingProductCount())); // Số thực tế
+                revenueChart.setTitle("Monthly Product Import (Mock)");
+                sourceData = mockData; // <--- Dùng mock data đã nạp ở trên
                 break;
 
             case "Customers":
-                revenueChart.setTitle("New Customers Growth");
-                series.getData().add(new XYChart.Data<>("Jan", 10));
-                series.getData().add(new XYChart.Data<>("Feb", 15));
-                series.getData().add(new XYChart.Data<>("Mar", 25));
-                series.getData().add(new XYChart.Data<>("Apr", 40));
-                series.getData().add(new XYChart.Data<>("May", 55));
+                revenueChart.setTitle("New Customers Growth (Mock)");
+                sourceData = mockData; // <--- Dùng mock data đã nạp ở trên
                 break;
-
-            case "Revenue":
-                revenueChart.setTitle("Monthly Revenue ($)");
-                series.getData().add(new XYChart.Data<>("Jan", 5000));
-                series.getData().add(new XYChart.Data<>("Feb", 12000));
-                series.getData().add(new XYChart.Data<>("Mar", 8000));
-                series.getData().add(new XYChart.Data<>("Apr", 18500));
-                // Lấy số liệu thực tế cho tháng hiện tại (cộng thêm 1 chút cho chart nó đẹp)
-                series.getData().add(new XYChart.Data<>("May", inventoryManager.totalValue() > 0 ? inventoryManager.totalValue() : 20000)); 
-                break;
+        }
+        
+        // --- VẼ CHART: LẤP ĐẦY 12 THÁNG BẰNG DỮ LIỆU CÓ SẴN (hoặc 0) ---
+        for (String month : allMonths) {
+            // Dùng getOrDefault để lấy 0 nếu tháng đó không có dữ liệu (lấp đầy 12 tháng)
+            Double value = sourceData.getOrDefault(month, 0.0);
+            series.getData().add(new XYChart.Data<>(month, value));
         }
 
         revenueChart.getData().add(series);
@@ -628,5 +700,29 @@ public class DashboardController implements Initializable {
         if (cardProduct != null) cardProduct.setStyle(defaultStyle);
         if (cardCustomer != null) cardCustomer.setStyle(defaultStyle);
         if (cardRevenue != null) cardRevenue.setStyle(defaultStyle);
+    }
+
+    private void filterProductList(String keyword) {
+
+        if (keyword == null || keyword.isEmpty()){
+            productTable.setItems(productList);
+            return;
+        }
+
+        ObservableList<Product> filteredList = FXCollections.observableArrayList();
+        String lowerCaseFilter = keyword.toLowerCase();
+
+        for (Product p : productList) {
+            boolean matchName = p.getNamePro().toLowerCase().contains(lowerCaseFilter);
+            boolean matchBrand = p.getBrand().toLowerCase().contains(lowerCaseFilter);
+            boolean matchId = p.getId().toLowerCase().contains(lowerCaseFilter);
+            boolean matchCategory = p.getCatePro().toLowerCase().contains(lowerCaseFilter);
+
+            if (matchName || matchBrand || matchId || matchCategory){
+                filteredList.add(p);
+            }
+        }
+
+        productTable.setItems(filteredList);
     }
 }
