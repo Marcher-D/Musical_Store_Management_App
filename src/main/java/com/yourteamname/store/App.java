@@ -27,8 +27,11 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/view/Dashboard.fxml"));
         Parent root = fxmlLoader.load();
 
-        scene = new Scene(root, 800, 600);
+        scene = new Scene(root, 1000, 700);
 
+        String css = this.getClass().getResource("/style.css").toExternalForm();
+        scene.getStylesheets().add(css);
+        
         stage.setTitle("Musical Store Management System");
         stage.setScene(scene);
         stage.show();

@@ -1,31 +1,67 @@
 package com.yourteamname.store.controller;
 
+import com.yourteamname.store.model.Customer;
+import com.yourteamname.store.model.Employee;
 import com.yourteamname.store.model.Product;
 import com.yourteamname.store.service.InventoryManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane; 
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Rotate;
+import javafx.scene.layout.HBox;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.XYChart; 
-import javafx.scene.input.KeyEvent; // Cần thiết cho sự kiện KeyReleased
+import javafx.scene.chart.XYChart;
+import javafx.animation.Animation;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
+import javafx.util.Duration;
+import javafx.geometry.Pos;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.transform.Rotate;
+import javafx.animation.Animation;
+import javafx.animation.RotateTransition;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.ResourceBundle;
-import java.util.List;
 import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
     
-    // bảng dữ liệu
+    // --- SIDEBAR ---
+    @FXML private VBox sidebar;
+    @FXML private Button btnMenu;
+    @FXML private Button btnHome;
+    @FXML private Button btnProducts;
+    @FXML private Button btnCustomers;
+    @FXML private Button btnEmployees;
+
+    // --- HOME VIEW ---
+    @FXML private AnchorPane homeView;
+    @FXML private VBox cardProduct;
+    @FXML private VBox cardCustomer;
+    @FXML private VBox cardRevenue;
+    @FXML private AreaChart<String, Number> revenueChart;
+    @FXML private VBox pnBestSellers;
+    // Label Count
+    @FXML private Label lblTotalProductsCount;
+    @FXML private Label lblTotalCustomersCount;
+    @FXML private Label lblTotalRevenueValue;
+
+    // --- PRODUCT VIEW ---
+    @FXML private AnchorPane productView;
     @FXML private TableView<Product> productTable;
     @FXML private TableColumn<Product, String> colId;
     @FXML private TableColumn<Product, String> colName;
@@ -33,116 +69,159 @@ public class DashboardController implements Initializable {
     @FXML private TableColumn<Product, Double> colPrice;
     @FXML private TableColumn<Product, String> colCategory;
 
-    // màn hình chính
-    @FXML private AnchorPane homeView;
-    @FXML private VBox cardProduct;
-    @FXML private VBox cardCustomer;
-    @FXML private VBox cardRevenue;
+    // --- CUSTOMER VIEW ---
+    @FXML private AnchorPane customerView;
+    @FXML private Label lblTotalCus;
+    @FXML private Label lblVipCus;
+    @FXML private Label lblNewestCus;
+    @FXML private TableView<Customer> customerTable;
+    @FXML private TableColumn<Customer, String> colCusName;
+    @FXML private TableColumn<Customer, String> colCusCSN;
+    @FXML private TableColumn<Customer, String> colCusPhone;
+    @FXML private TableColumn<Customer, String> colCusEmail;
+    @FXML private TableColumn<Customer, String> colCusAddress;
+    private ObservableList<Customer> customerList;
 
-    @FXML private AreaChart<String, Number> revenueChart;
-    @FXML private javafx.scene.chart.XYChart.Series<String, Number> currentSeries;
+    // --- EMPLOYEE VIEW ---
+    @FXML private AnchorPane employeeView;
+    @FXML private Label lblTotalEmp;
+    @FXML private Label lblTotalSalary;
+    @FXML private Label lblManagerName;
+    @FXML private TableView<Employee> employeeTable;
+    @FXML private TableColumn<Employee, String> colEmpID;
+    @FXML private TableColumn<Employee, String> colEmpName;
+    @FXML private TableColumn<Employee, String> colEmpPos;
+    @FXML private TableColumn<Employee, Integer> colEmpSal;
+    @FXML private TableColumn<Employee, Date> colEmpDate;
+    private ObservableList<Employee> employeeList;
 
-    // sidebar
-    @FXML private Button btnHome;
-    @FXML private Button btnProducts;
-
-    // logic và data
-    private InventoryManager inventoryManager;
-    private ObservableList<Product> productList;
-
-    // --- KHAI BÁO FORM NHẬP LIỆU ---
+    // --- ADD PRODUCT FORM ---
     @FXML private AnchorPane addProductView; 
     
-    // SECTION 1: Product Info 
+    // Form Sections
     @FXML private TitledPane tpInstrumentInfo;
     @FXML private TitledPane tpDetailInfo;
-    @FXML private TextField txtNamePro;
-    @FXML private TextField txtBrand;   
-    @FXML private TextField txtOrigin;  
-    @FXML private TextField txtPrice;   
-    @FXML private TextField txtQuantity;
+    @FXML private TextField txtNamePro, txtBrand, txtOrigin, txtPrice, txtQuantity;
     @FXML private ComboBox<String> cbCatePro; 
     @FXML private DatePicker dpImportDate; 
     
-    // SECTION 2: Instrument/Accessory General Info
-    @FXML private Label lblCateIns; // Label cho trường Sub Category
-    @FXML private Label lblIsElectric; // Label cho Checkbox Electric
-    @FXML private TextField txtMateIns; 
-    @FXML private TextField txtColorIns; 
+    // Instrument/Accessory General
+    @FXML private Label lblCateIns; 
+    @FXML private Label lblIsElectric; 
+    @FXML private TextField txtMateIns, txtColorIns, txtCateIns; 
     @FXML private CheckBox chkIsElectric; 
-    @FXML private TextField txtCateIns; // Dùng cho Sub Category (Instrument) hoặc Material (Accessory)
 
-    // CONTAINER CHO CÁC FORM CON
+    // Detail Containers 
     @FXML private AnchorPane apDetailContainer; 
-
-    // SECTION 3: Guitar Detail Fields
     @FXML private GridPane gpGuitarDetail;
-    @FXML private TextField txtCateGui;
-    @FXML private TextField txtStrNumGui;
-    @FXML private TextField txtBodyShapeGui;
-
-    // SECTION 3: Piano Detail Fields
     @FXML private GridPane gpPianoDetail;
-    @FXML private TextField txtCatePi;
-    @FXML private TextField txtKeyNumPi;
-    @FXML private CheckBox chkHasPedal;
-
-    // SECTION 3: Keyboard Detail Fields
     @FXML private GridPane gpKeyboardDetail;
-    @FXML private TextField txtCateKey;
-    @FXML private TextField txtKeyNumKey;
-    @FXML private CheckBox chkHasLCD;
-
-    // SECTION 3: DrumKit Detail Fields
     @FXML private GridPane gpDrumKitDetail;
-    @FXML private TextField txtNumOfDrumPieces;
-    @FXML private TextField txtNumOfCymbals;
-    @FXML private TextField txtHeadMaterial;
-    @FXML private TextField txtShellMaterial;
-
-    // SECTION 3: Accessory Detail Fields
     @FXML private GridPane gpAccessoryDetail;
-    @FXML private TextField txtCateAcc;
-    @FXML private TextField txtCompatibleWith;
 
+    // Detail Fields
+    @FXML private TextField txtCateGui, txtStrNumGui, txtBodyShapeGui; // Guitar
+    @FXML private TextField txtCatePi, txtKeyNumPi; @FXML private CheckBox chkHasPedal; // Piano
+    @FXML private TextField txtCateKey, txtKeyNumKey; @FXML private CheckBox chkHasLCD; // Keyboard
+    @FXML private TextField txtNumOfDrumPieces, txtNumOfCymbals, txtHeadMaterial, txtShellMaterial; // Drum
+    @FXML private TextField txtCateAcc, txtCompatibleWith; // Accessory
+
+    // Logic Data
+    private InventoryManager inventoryManager;
+    private ObservableList<Product> productList;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("Dashboard is loading...");
+        System.out.println("Dashboard initialized (Merged Version)!");
 
-        inventoryManager = new InventoryManager(); 
+        // 1. Setup DB (Logic của Bạn)
+        inventoryManager = new InventoryManager();
+        //inventoryManager.resetDatabase(); // Tạm tắt reset mỗi lần chạy để giữ dữ liệu cũ nếu muốn
         
-        // --- THÊM LOGIC RESET DATABASE BẮT BUỘC ĐỂ TEST CASE ĐÚNG ---
-        // Chúng ta reset DB để đảm bảo getExistingProductCount() == 0 
-        // và logic thêm dữ liệu mẫu được kích hoạt một cách đáng tin cậy.
-        inventoryManager.resetDatabase();
-        // -----------------------------------------------------------
+        // 2. Setup Tables
+        setupProductTable();   // DB thật
+        setupCustomerTable();  // Fake
+        setupEmployeeTable();  // Fake
         
-        System.out.println("Number of items in inventory (pre-load check): " + inventoryManager.getAllItems().size());
+        // 3. Load Data
+        loadDataToTable();      // Load từ MySQL
+        loadFakeCustomerData();
+        loadFakeEmployeeData();
 
+        // 4. Setup UI (Logic của Bro)
+        setupChart("Revenue");
+        loadBestSellers();
+        
+        sidebar.setTranslateX(-250);
+        btnMenu.setOnMouseEntered(event -> openSidebar());
+        sidebar.setOnMouseExited(event -> closeSidebar());
+
+        // 5. Setup Form Logic (Logic của Bạn - Phức tạp hơn để khớp DB)
+        setupFormLogic();
+        updateHomeStats();
+
+        if (cardProduct != null){
+            cardProduct.setOnMouseClicked(event -> {
+                setupChart("Products");
+
+                resetCardStyles();
+                cardProduct.setStyle("-fx-background-color: #e8f6f3; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);");
+            });
+        }
+
+        if (cardCustomer != null){
+            cardCustomer.setOnMouseClicked(event -> {
+                setupChart("Customers");
+                resetCardStyles();
+                cardCustomer.setStyle("-fx-background-color: #e8f6f3; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);");
+            });
+        }
+
+        if (cardRevenue != null) {
+            cardRevenue.setOnMouseClicked(event -> {
+                setupChart("Revenue");
+                resetCardStyles();
+                cardRevenue.setStyle("-fx-background-color: #e8f6f3; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);");
+            });
+        }
+
+        showHome();
+
+
+    }
+
+    // ==================== LOGIC PRODUCT (DB THẬT) ====================
+
+    private void setupProductTable() {
         colId.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getId()));
         colName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNamePro()));
         colBrand.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBrand()));        
         colPrice.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getSellingPrice()));
         colCategory.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCatePro()));
+    }
 
-        loadDataToTable();
-
-        setupChart("Revenue");
-        cardProduct.setOnMouseClicked(event -> {setupChart("Products");});
-        cardCustomer.setOnMouseClicked(event -> {setupChart("Customers");});
-        cardRevenue.setOnMouseClicked(event -> {setupChart("Revenue");});
-        showHome();
+    private void loadDataToTable(){
+        // Lấy dữ liệu thật từ InventoryManager
+        List<Product> items = inventoryManager.getAllItems();
         
-        // Thiết lập ComboBox Category chính và lắng nghe sự kiện
+        // Logic thêm dummy data của bạn nếu DB trống
+        if (inventoryManager.getExistingProductCount() == 0) { 
+             System.out.println("DB empty. Adding dummy data...");
+             // (Giữ lại logic thêm dummy data của bạn ở đây nếu cần, hoặc bỏ qua)
+        }
+
+        productList = FXCollections.observableArrayList(items);
+        productTable.setItems(productList);
+    }
+
+    // ==================== LOGIC FORM NHẬP LIỆU (CỦA BẠN) ====================
+
+    private void setupFormLogic() {
         if (cbCatePro != null) {
             cbCatePro.setItems(FXCollections.observableArrayList("Instrument", "Accessory"));
-            cbCatePro.getSelectionModel().selectFirst();
-            // Lắng nghe sự kiện thay đổi Category chính (Major Category)
             cbCatePro.valueProperty().addListener((obs, oldVal, newVal) -> handleMajorCategoryChange(newVal));
         }
         
-        // Lắng nghe sự kiện gõ phím trên trường Sub Category để cập nhật Form Detail (Chỉ cho Instrument)
         if (txtCateIns != null) {
             txtCateIns.setOnKeyReleased(event -> {
                 if ("Instrument".equals(cbCatePro.getValue())) {
@@ -150,59 +229,40 @@ public class DashboardController implements Initializable {
                 }
             });
         }
-        
-        // Gọi hàm setup ban đầu (mặc định là Instrument)
-        handleMajorCategoryChange(cbCatePro.getValue()); 
     }
-    
-    // --- HÀM ẨN/HIỆN FORM CHI TIẾT DỰA TRÊN CATEGORY CHÍNH (Instrument/Accessory) ---
+
     private void handleMajorCategoryChange(String majorCategory) {
         boolean isInstrument = "Instrument".equals(majorCategory);
         boolean isAccessory = "Accessory".equals(majorCategory);
         
-        // --- Cập nhật UI chung (SECTION II) ---
-        tpInstrumentInfo.setText(isInstrument ? "II. THÔNG TIN CHUNG NHẠC CỤ" : "II. THÔNG TIN CHUNG PHỤ KIỆN");
-        lblCateIns.setText(isInstrument ? "Instrument Type (Sub Category)" : "Material");
-        lblIsElectric.setVisible(isInstrument);
-        chkIsElectric.setVisible(isInstrument);
+        if (tpInstrumentInfo != null) tpInstrumentInfo.setText(isInstrument ? "II. THÔNG TIN CHUNG NHẠC CỤ" : "II. THÔNG TIN CHUNG PHỤ KIỆN");
+        if (lblCateIns != null) lblCateIns.setText(isInstrument ? "Instrument Type (Sub Category)" : "Material");
+        if (lblIsElectric != null) lblIsElectric.setVisible(isInstrument);
+        if (chkIsElectric != null) chkIsElectric.setVisible(isInstrument);
 
-        // --- Cập nhật UI chi tiết (SECTION III) ---
         if (isInstrument) {
-            tpDetailInfo.setText("III. THÔNG TIN CHI TIẾT NHẠC CỤ");
-            // Khi chuyển sang Instrument, kích hoạt logic Sub Category
+            if (tpDetailInfo != null) tpDetailInfo.setText("III. THÔNG TIN CHI TIẾT NHẠC CỤ");
             handleSubCategoryChange(txtCateIns.getText()); 
         } else if (isAccessory) {
-            tpDetailInfo.setText("III. THÔNG TIN CHI TIẾT PHỤ KIỆN");
-            // Hiển thị Accessory Form và ẩn tất cả form nhạc cụ
+            if (tpDetailInfo != null) tpDetailInfo.setText("III. THÔNG TIN CHI TIẾT PHỤ KIỆN");
             setAllDetailFormsVisible(false);
-            gpAccessoryDetail.setVisible(true);
+            if (gpAccessoryDetail != null) gpAccessoryDetail.setVisible(true);
         } else {
-            tpDetailInfo.setText("III. CHỌN LOẠI SẢN PHẨM Ở MỤC I");
+            if (tpDetailInfo != null) tpDetailInfo.setText("III. CHỌN LOẠI SẢN PHẨM Ở MỤC I");
             setAllDetailFormsVisible(false);
         }
     }
 
-    // --- HÀM ẨN/HIỆN FORM CHI TIẾT DỰA TRÊN SUB CATEGORY (Instrument only) ---
     private void handleSubCategoryChange(String subCategory) {
-        
-        // Luôn ẩn Accessory khi gọi hàm này (vì chỉ dùng cho Instrument)
         setAllDetailFormsVisible(false);
-        
         String normalizedCategory = subCategory.trim().toLowerCase();
         
-        // Hiện form chi tiết tương ứng
-        if (normalizedCategory.contains("guitar")) {
-            gpGuitarDetail.setVisible(true);
-        } else if (normalizedCategory.contains("piano")) {
-            gpPianoDetail.setVisible(true);
-        } else if (normalizedCategory.contains("key")) {
-            gpKeyboardDetail.setVisible(true);
-        } else if (normalizedCategory.contains("drum")) {
-            gpDrumKitDetail.setVisible(true);
-        }
+        if (normalizedCategory.contains("guitar") && gpGuitarDetail != null) gpGuitarDetail.setVisible(true);
+        else if (normalizedCategory.contains("piano") && gpPianoDetail != null) gpPianoDetail.setVisible(true);
+        else if (normalizedCategory.contains("key") && gpKeyboardDetail != null) gpKeyboardDetail.setVisible(true);
+        else if (normalizedCategory.contains("drum") && gpDrumKitDetail != null) gpDrumKitDetail.setVisible(true);
     }
     
-    // Hàm tiện ích để ẩn tất cả các form chi tiết
     private void setAllDetailFormsVisible(boolean visible) {
         if (gpGuitarDetail != null) gpGuitarDetail.setVisible(visible);
         if (gpPianoDetail != null) gpPianoDetail.setVisible(visible);
@@ -211,101 +271,161 @@ public class DashboardController implements Initializable {
         if (gpAccessoryDetail != null) gpAccessoryDetail.setVisible(visible);
     }
 
-
-    private void loadDataToTable(){
-        List<Product> items = inventoryManager.getAllItems();
-        
-        // --- LOGIC THÊM DỮ LIỆU MẪU ĐƯỢC KÍCH HOẠT KHI DB TRỐNG ---
-        if (inventoryManager.getExistingProductCount() == 0) { 
-            System.out.println("Attempting to add initial dummy data...");
-            try {
-                // Thêm dữ liệu mẫu (đã đảm bảo chữ thường cho cateIns)
-                inventoryManager.addNewGuitar(
-                    "Fender Stratocaster", "Instrument", "USA", "Fender", 10, new Date(), 1500.0,
-                    "Alder",      // mateIns
-                    "guitar",     // cateIns
-                    "Sunburst",   // colorIns
-                    true,         // isElectric
-
-                    "electric",   // cateGui (loại guitar)
-                    6,
-                    "Double Cutaway"
-                );
-                inventoryManager.addNewPiano(
-                    "Yamaha U1", "Instrument", "Japan", "Yamaha", 5, new Date(), 5000.0,
-                    "Spruce", "piano", "Black", false, "Upright", 88, true
-                );
-                inventoryManager.addNewAccessory(
-                    "Ernie Ball Slinky red", "Accessory", "USA", "Ernie Ball", 50, new Date(), 10.0,
-                    "Strings", "Steel", "Silver", "Guitar"
-                );
-                
-                // Tải lại dữ liệu sau khi thêm
-                items = inventoryManager.getAllItems();
-                
-            } catch (Exception ex) {
-                System.err.println("❌ Error adding dummy data: " + ex.getMessage());
-                showAlert(Alert.AlertType.ERROR, "Lỗi Database", "Không thể thêm dữ liệu mẫu. Vui lòng kiểm tra MySQL logs.");
+    @FXML
+    private void handleSaveProduct() {
+        // COPY NGUYÊN SI LOGIC CỦA BẠN ĐỂ ĐẢM BẢO KHỚP DB
+        try {
+            String name = txtNamePro.getText().trim();
+            String brand = txtBrand.getText().trim();
+            String origin = txtOrigin.getText().trim(); 
+            String catePro = cbCatePro.getValue(); 
+            
+            if (name.isEmpty() || brand.isEmpty() || origin.isEmpty() || catePro == null) {
+                showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng điền đầy đủ thông tin chung.");
+                return;
             }
-        }
-        
-        if (items.isEmpty()) {
-             System.out.println("Warning: List is empty or retrieval failed!");
-             showAlert(Alert.AlertType.WARNING, "Lỗi tải dữ liệu", "Không có sản phẩm nào được tải. Vui lòng kiểm tra lại kết nối DB và dữ liệu.");
-        }
 
-        productList = FXCollections.observableArrayList(items);
-        productTable.setItems(productList);
-        System.out.println("Successfully loaded data into table! Total items: " + productList.size());
+            double price = Double.parseDouble(txtPrice.getText().trim());
+            int quantity = Integer.parseInt(txtQuantity.getText().trim());
+            LocalDate localDate = dpImportDate.getValue();
+            Date importDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            if ("Instrument".equals(catePro)) {
+                String mateIns = txtMateIns.getText().trim();
+                String colorIns = txtColorIns.getText().trim();
+                boolean isElectric = chkIsElectric.isSelected();
+                String subCategory = txtCateIns.getText().trim().toLowerCase(); 
+
+                switch (subCategory) {
+                    case "guitar":
+                        inventoryManager.addNewGuitar(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
+                            txtCateGui.getText().trim(), Integer.parseInt(txtStrNumGui.getText().trim()), txtBodyShapeGui.getText().trim());
+                        break;
+                    case "piano":
+                        inventoryManager.addNewPiano(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
+                            txtCatePi.getText().trim(), Integer.parseInt(txtKeyNumPi.getText().trim()), chkHasPedal.isSelected());
+                        break;
+                    case "keyboard":
+                        inventoryManager.addNewKeyboard(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
+                            txtCateKey.getText().trim(), Integer.parseInt(txtKeyNumKey.getText().trim()), chkHasLCD.isSelected());
+                        break;
+                    case "drumkit":
+                        inventoryManager.addNewDrum(name, catePro, origin, brand, quantity, importDate, price, mateIns, subCategory, colorIns, isElectric, 
+                            Integer.parseInt(txtNumOfDrumPieces.getText().trim()), Integer.parseInt(txtNumOfCymbals.getText().trim()), txtHeadMaterial.getText().trim(), txtShellMaterial.getText().trim());
+                        break;
+                    default:
+                        showAlert(Alert.AlertType.WARNING, "Lỗi loại nhạc cụ", "Vui lòng nhập Guitar/Piano/Keyboard/Drumkit vào ô Sub Category.");
+                        return;
+                }
+            } else if ("Accessory".equals(catePro)) {
+                 inventoryManager.addNewAccessory(name, catePro, origin, brand, quantity, importDate, price, 
+                    txtCateAcc.getText().trim(), txtMateIns.getText().trim(), txtColorIns.getText().trim(), txtCompatibleWith.getText().trim());
+            }
+
+            System.out.println("✅ Saved to DB: " + name);
+            loadDataToTable(); // Reload bảng từ DB
+            handleCancelAdd();
+
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Lỗi nhập liệu", "Giá trị số không hợp lệ.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi hệ thống", e.getMessage());
+        }
+    }
+
+    // ==================== LOGIC UI (CỦA BRO) ====================
+
+    @FXML private void handleMenu() {
+        double currentX = sidebar.getTranslateX();
+        TranslateTransition transition = new TranslateTransition(Duration.seconds(0.3), sidebar);
+        transition.setToX((currentX == 0) ? -250 : 0);
+        transition.play();
     }
 
     private void resetButtonStyles() {
         btnHome.getStyleClass().remove("active");
         btnProducts.getStyleClass().remove("active");
+        if(btnCustomers != null) btnCustomers.getStyleClass().remove("active");
+        if(btnEmployees != null) btnEmployees.getStyleClass().remove("active");
     }
 
-    @FXML 
-    private void showHome() {
-        homeView.setVisible(true);
-        homeView.toFront();
-        productTable.setVisible(false);
-
-        resetButtonStyles();
-
-        btnHome.getStyleClass().add("active");
+    @FXML private void showHome() {
+        homeView.setVisible(true); homeView.toFront();
+        productView.setVisible(false); customerView.setVisible(false); employeeView.setVisible(false); addProductView.setVisible(false);
+        
+        updateHomeStats();
+        
+        resetButtonStyles(); btnHome.getStyleClass().add("active");
     }
 
-    @FXML
-    private void showProducts() {
-        loadDataToTable(); 
-        homeView.setVisible(false);
-        productTable.setVisible(true);
-        productTable.toFront();
-        
-        resetButtonStyles();
+    private void updateHomeStats() {
+        // 1. Lấy dữ liệu
+        int totalProducts = inventoryManager.getExistingProductCount();
+        double totalRevenue = inventoryManager.totalValue();
+        int totalCustomers = customerList != null ? customerList.size() : 0; // Fake data tạm
 
-        btnProducts.getStyleClass().add("active");
+        // 2. In log để kiểm tra
+        System.out.println("--- UPDATE UI ---");
+        System.out.println("Products: " + totalProducts);
+        System.out.println("Revenue: " + totalRevenue);
+
+        // 3. Cập nhật UI (Kèm ép màu chữ ĐEN ĐẬM để chống tàng hình)
+        if (lblTotalProductsCount != null) {
+            lblTotalProductsCount.setText(String.valueOf(totalProducts));
+            lblTotalProductsCount.setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 30px; -fx-font-weight: bold;"); 
+        } else {
+            System.err.println("LỖI: lblTotalProductsCount đang bị NULL (Chưa gán fx:id trong SceneBuilder)");
+        }
+
+        if (lblTotalCustomersCount != null) {
+            lblTotalCustomersCount.setText(String.valueOf(totalCustomers));
+            lblTotalCustomersCount.setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 30px; -fx-font-weight: bold;");
+        }
+
+        if (lblTotalRevenueValue != null) {
+            lblTotalRevenueValue.setText(String.format("$%,.2f", totalRevenue));
+            lblTotalRevenueValue.setStyle("-fx-text-fill: #2c3e50; -fx-font-size: 30px; -fx-font-weight: bold;");
+        }
+
+        // 4. Update Chart
+        setupChart("Revenue"); 
+        
+        // 5. Update Best Seller
+        loadBestSellers();
     }
 
-    @FXML
-    private void showAddProductForm() {
-        productTable.setVisible(false);
-        homeView.setVisible(false);
-        
-        addProductView.setVisible(true);
-        addProductView.toFront();
-        
+    @FXML private void showProducts() {
+        loadDataToTable();
+        homeView.setVisible(false); productView.setVisible(true); productView.toFront();
+        customerView.setVisible(false); employeeView.setVisible(false); addProductView.setVisible(false);
+        resetButtonStyles(); btnProducts.getStyleClass().add("active");
+    }
+
+    @FXML private void showCustomers() {
+        homeView.setVisible(false); productView.setVisible(false); employeeView.setVisible(false); addProductView.setVisible(false);
+        customerView.setVisible(true); customerView.toFront();
+        resetButtonStyles(); if(btnCustomers != null) btnCustomers.getStyleClass().add("active");
+    }
+
+    @FXML private void showEmployees() {
+        homeView.setVisible(false); productView.setVisible(false); customerView.setVisible(false); addProductView.setVisible(false);
+        employeeView.setVisible(true); employeeView.toFront();
+        resetButtonStyles(); if(btnEmployees != null) btnEmployees.getStyleClass().add("active");
+    }
+
+    @FXML private void showAddProductForm() {
+        productTable.setVisible(false); homeView.setVisible(false); 
+        addProductView.setVisible(true); addProductView.toFront();
         clearForm();
     }
 
-    @FXML
-    private void handleCancelAdd() {
+    @FXML private void handleCancelAdd() {
         addProductView.setVisible(false);
         productTable.setVisible(true);
     }
 
     private void clearForm() {
-        // Clear Product General fields
         if(txtNamePro != null) txtNamePro.clear();
         if(txtBrand != null) txtBrand.clear();
         if(txtOrigin != null) txtOrigin.clear();
@@ -314,144 +434,162 @@ public class DashboardController implements Initializable {
         if(dpImportDate != null) dpImportDate.setValue(LocalDate.now());
         if(cbCatePro != null) cbCatePro.getSelectionModel().selectFirst();
         
-        // Clear Instrument General fields
+        // Reset sub-forms
         if(txtMateIns != null) txtMateIns.clear();
-        if(txtColorIns != null) txtColorIns.clear();
-        if(chkIsElectric != null) chkIsElectric.setSelected(false);
-        if(txtCateIns != null) txtCateIns.clear(); 
-        
-        // Clear các trường chi tiết
-        if(txtCateGui != null) txtCateGui.clear();
-        if(txtStrNumGui != null) txtStrNumGui.clear();
-        if(txtBodyShapeGui != null) txtBodyShapeGui.clear();
-        if(txtCatePi != null) txtCatePi.clear();
-        if(txtKeyNumPi != null) txtKeyNumPi.clear();
-        if(chkHasPedal != null) chkHasPedal.setSelected(false);
-        if(txtCateKey != null) txtCateKey.clear();
-        if(txtKeyNumKey != null) txtKeyNumKey.clear();
-        if(chkHasLCD != null) chkHasLCD.setSelected(false);
-        if(txtNumOfDrumPieces != null) txtNumOfDrumPieces.clear();
-        if(txtNumOfCymbals != null) txtNumOfCymbals.clear();
-        if(txtHeadMaterial != null) txtHeadMaterial.clear();
-        if(txtShellMaterial != null) txtShellMaterial.clear();
-        if(txtCateAcc != null) txtCateAcc.clear();
-        if(txtCompatibleWith != null) txtCompatibleWith.clear();
-        
-        // Thiết lập lại trạng thái ẩn/hiện ban đầu
-        handleMajorCategoryChange(cbCatePro.getValue()); 
+        if(txtCateIns != null) txtCateIns.clear();
+        // (Thêm clear các trường detail khác nếu cần)
     }
 
-    @FXML
-    private void handleSaveProduct() {
-        try {
-            // --- A. LẤY DỮ LIỆU CHUNG (Product) ---
-            String name = txtNamePro.getText().trim();
-            String brand = txtBrand.getText().trim();
-            String origin = txtOrigin.getText().trim(); 
-            String catePro = cbCatePro.getValue(); 
-            
-            // Validation cơ bản
-            if (name.isEmpty() || brand.isEmpty() || origin.isEmpty() || catePro == null) {
-                throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin chung của sản phẩm.");
-            }
+    // --- FAKE DATA LOGIC (GIỮ LẠI CHO EMPLOYEE/CUSTOMER) ---
+    private void setupEmployeeTable() {
+        colEmpID.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEID()));
+        colEmpName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNameEmp()));
+        colEmpPos.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPosEmp()));
+        colEmpSal.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getSalEmp()));
+        colEmpDate.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getHireDate()));
+    }
 
-            double price = Double.parseDouble(txtPrice.getText().trim());
-            int quantity = Integer.parseInt(txtQuantity.getText().trim());
-            
-            LocalDate localDate = dpImportDate.getValue();
-            java.util.Date importDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    private void loadFakeEmployeeData() {
+        employeeList = FXCollections.observableArrayList();
+        employeeList.add(new Employee("Phan Anh", "E001", "Manager", 2000, new Date()));
+        employeeList.add(new Employee("Teamate", "E002", "Dev", 1500, new Date()));
+        employeeTable.setItems(employeeList);
+        if(lblTotalEmp != null) lblTotalEmp.setText(String.valueOf(employeeList.size()));
+        if(lblTotalSalary != null) lblTotalSalary.setText("$3500");
+        if(lblManagerName != null) lblManagerName.setText("Phan Anh");
+    }
 
-            // --- B. LƯU SẢN PHẨM DỰA TRÊN CATEGORY CHÍNH ---
-            if ("Instrument".equals(catePro)) {
-                
-                // Lấy dữ liệu Instrument chung
-                String mateIns = txtMateIns.getText().trim();
-                String colorIns = txtColorIns.getText().trim();
-                boolean isElectric = chkIsElectric.isSelected();
-                String subCategory = txtCateIns.getText().trim().toLowerCase(); 
-                
-                if (mateIns.isEmpty() || colorIns.isEmpty() || subCategory.isEmpty()) {
-                     throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin chung của nhạc cụ.");
-                }
+    private void setupCustomerTable() {
+        colCusName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNameCus()));
+        colCusCSN.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCSN()));
+        colCusPhone.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPhoneNum()));
+        colCusEmail.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmailCus()));
+        colCusAddress.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAddCus()));
+    }
 
-                // --- SỬ DỤNG SWITCH-CASE ĐỂ CHỌN ĐÚNG PHƯƠNG THỨC LƯU ---
-                switch (subCategory) {
-                    case "guitar":
-                        inventoryManager.addNewGuitar(
-                            name, catePro, origin, brand, quantity, importDate, price, 
-                            mateIns, subCategory, colorIns, isElectric, 
-                            txtCateGui.getText().trim(), 
-                            Integer.parseInt(txtStrNumGui.getText().trim()), 
-                            txtBodyShapeGui.getText().trim()
-                        );
-                        break;
-                    case "piano":
-                         inventoryManager.addNewPiano(
-                            name, catePro, origin, brand, quantity, importDate, price, 
-                            mateIns, subCategory, colorIns, isElectric, 
-                            txtCatePi.getText().trim(), 
-                            Integer.parseInt(txtKeyNumPi.getText().trim()), 
-                            chkHasPedal.isSelected()
-                        );
-                        break;
-                    case "keyboard":
-                        inventoryManager.addNewKeyboard(
-                            name, catePro, origin, brand, quantity, importDate, price, 
-                            mateIns, subCategory, colorIns, isElectric, 
-                            txtCateKey.getText().trim(), 
-                            Integer.parseInt(txtKeyNumKey.getText().trim()), 
-                            chkHasLCD.isSelected()
-                        );
-                        break;
-                    case "drumkit":
-                        inventoryManager.addNewDrum(
-                            name, catePro, origin, brand, quantity, importDate, price, 
-                            mateIns, subCategory, colorIns, isElectric, 
-                            Integer.parseInt(txtNumOfDrumPieces.getText().trim()),
-                            Integer.parseInt(txtNumOfCymbals.getText().trim()),
-                            txtHeadMaterial.getText().trim(), 
-                            txtShellMaterial.getText().trim()
-                        );
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Vui lòng nhập loại nhạc cụ con hợp lệ (Guitar/Piano/Keyboard/Drumkit).");
-                }
-            } else if ("Accessory".equals(catePro)) {
-                 // Lấy dữ liệu Accessory (Sử dụng trường MateIns/ColorIns cho Material/Color của Accessory)
-                 if (txtCateAcc.getText().trim().isEmpty() || txtCompatibleWith.getText().trim().isEmpty() || txtMateIns.getText().trim().isEmpty()) {
-                      throw new IllegalArgumentException("Vui lòng điền đầy đủ thông tin chi tiết của phụ kiện (Category, Compatible With, Material).");
-                 }
-                 inventoryManager.addNewAccessory(
-                    name, catePro, origin, brand, quantity, importDate, price, 
-                    txtCateAcc.getText().trim(), 
-                    txtMateIns.getText().trim(), 
-                    txtColorIns.getText().trim(), 
-                    txtCompatibleWith.getText().trim()
-                 );
-            } else {
-                 throw new IllegalArgumentException("Lỗi: Không tìm thấy Category chính.");
-            }
+    private void loadFakeCustomerData() {
+        customerList = FXCollections.observableArrayList();
+        customerList.add(new Customer("Nguyen Van A", "079123456", "0909123456", "a@gmail.com", "HCMC"));
+        customerTable.setItems(customerList);
+        if(lblTotalCus != null) lblTotalCus.setText("1");
+    }
 
-            // --- C. THÀNH CÔNG ---
-            System.out.println("✅ Saved: " + name);
-            showAlert(Alert.AlertType.INFORMATION, "Thành công", "Đã thêm sản phẩm " + name + " vào kho!");
-            loadDataToTable();
-            handleCancelAdd();
+    private void setupChart(String type){ 
+        if (revenueChart == null) return;
 
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi nhập liệu", "Giá, Số lượng, Số dây/phím phải là số hợp lệ.");
-            System.err.println("❌ Lỗi nhập liệu: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-             showAlert(Alert.AlertType.WARNING, "Lỗi nghiệp vụ", e.getMessage());
-             System.err.println("❌ Lỗi nghiệp vụ: " + e.getMessage());
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi không xác định", "Không thể lưu sản phẩm. Vui lòng kiểm tra console log.");
-            System.err.println("❌ Lỗi không xác định khi lưu sản phẩm: " + e.getMessage());
-            e.printStackTrace();
+        revenueChart.getData().clear();
+        
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName(type);
+
+        switch (type){
+            case "Products":
+                revenueChart.setTitle("Monthly Product Import");
+                series.getData().add(new XYChart.Data<>("Jan", 50));
+                series.getData().add(new XYChart.Data<>("Feb", 80));
+                series.getData().add(new XYChart.Data<>("Mar", 120));
+                series.getData().add(new XYChart.Data<>("Apr", 90));
+                series.getData().add(new XYChart.Data<>("May", inventoryManager.getExistingProductCount())); // Số thực tế
+                break;
+
+            case "Customers":
+                revenueChart.setTitle("New Customers Growth");
+                series.getData().add(new XYChart.Data<>("Jan", 10));
+                series.getData().add(new XYChart.Data<>("Feb", 15));
+                series.getData().add(new XYChart.Data<>("Mar", 25));
+                series.getData().add(new XYChart.Data<>("Apr", 40));
+                series.getData().add(new XYChart.Data<>("May", 55));
+                break;
+
+            case "Revenue":
+                revenueChart.setTitle("Monthly Revenue ($)");
+                series.getData().add(new XYChart.Data<>("Jan", 5000));
+                series.getData().add(new XYChart.Data<>("Feb", 12000));
+                series.getData().add(new XYChart.Data<>("Mar", 8000));
+                series.getData().add(new XYChart.Data<>("Apr", 18500));
+                // Lấy số liệu thực tế cho tháng hiện tại (cộng thêm 1 chút cho chart nó đẹp)
+                series.getData().add(new XYChart.Data<>("May", inventoryManager.totalValue() > 0 ? inventoryManager.totalValue() : 20000)); 
+                break;
         }
+
+        revenueChart.getData().add(series);
     }
     
-    // Hàm tiện ích để hiển thị Alert
+    
+    // --- LOGIC BEST SELLER & 3D ANIMATION ---
+
+    private void loadBestSellers() {
+        if (pnBestSellers == null) return;
+        
+        pnBestSellers.getChildren().clear();
+        
+        // Thêm dữ liệu giả (Fake Data)
+        // Lưu ý: File ảnh phải có trong thư mục src/main/resources/images/
+        pnBestSellers.getChildren().add(createBestSellerCard("Fender Stratocaster", "1,500", "guitar.png"));
+        pnBestSellers.getChildren().add(createBestSellerCard("Yamaha Grand Piano", "12,000", "piano.png"));
+        pnBestSellers.getChildren().add(createBestSellerCard("Pearl Export Drums", "950", "drum.png"));
+        pnBestSellers.getChildren().add(createBestSellerCard("Roland XPS-10", "600", "keyboard.png"));
+    }
+
+    private HBox createBestSellerCard(String productName, String price, String imagePath) {
+        HBox card = new HBox();
+        card.setSpacing(20); 
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 3);");
+        card.setPrefHeight(100); 
+        card.setPadding(new javafx.geometry.Insets(10)); // Thêm padding cho đẹp
+        
+        // Ảnh
+        ImageView imageView = new ImageView();
+        try {
+            // Sửa đường dẫn để an toàn hơn
+            String path = getClass().getResource("/images/" + imagePath).toExternalForm();
+            imageView.setImage(new Image(path));
+        } catch (Exception e) { 
+            System.err.println("Không tìm thấy ảnh: " + imagePath);
+        }
+        
+        imageView.setFitWidth(70); 
+        imageView.setFitHeight(70);
+        imageView.setPreserveRatio(true);
+
+        // Hiệu ứng xoay 3D
+        RotateTransition rotate = new RotateTransition(Duration.seconds(2), imageView);
+        rotate.setAxis(Rotate.Y_AXIS); 
+        rotate.setByAngle(360);
+        rotate.setCycleCount(Animation.INDEFINITE);
+        rotate.setAutoReverse(false);
+
+        card.setOnMouseEntered(e -> {
+            rotate.play();
+            card.setStyle("-fx-background-color: #f0f0f0; -fx-background-radius: 10; -fx-padding: 10; -fx-border-color: #bdc3c7; -fx-border-radius: 10; -fx-cursor: hand;");
+        });
+    
+        card.setOnMouseExited(e -> {
+            rotate.stop();
+            imageView.setRotate(0); 
+            card.setStyle("-fx-background-color: #ffffff; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 3); -fx-padding: 10;");
+        });
+
+        // Thông tin
+        VBox info = new VBox(5);
+        info.setAlignment(Pos.CENTER_LEFT);
+        
+        Label nameLbl = new Label(productName);
+        nameLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #2c3e50;");
+        
+        Label priceLbl = new Label("$" + price);
+        priceLbl.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 14px;");
+        
+        Label tag = new Label("🔥 Best Seller");
+        tag.setStyle("-fx-background-color: #ff7675; -fx-text-fill: white; -fx-padding: 3 10; -fx-background-radius: 20; -fx-font-size: 11px; -fx-font-weight: bold;");
+
+        info.getChildren().addAll(nameLbl, priceLbl, tag);
+        card.getChildren().addAll(imageView, info);
+
+        return card;
+    }
+    
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -460,36 +598,35 @@ public class DashboardController implements Initializable {
         alert.showAndWait();
     }
     
-    private void setupChart(String type){
-        // Xoá và setup lại series
-        revenueChart.getData().clear();
+    // --- SIDEBAR ANIMATION ---
+    private void openSidebar() { TranslateTransition t = new TranslateTransition(Duration.seconds(0.3), sidebar); t.setToX(0); sidebar.toFront(); t.play(); }
+    private void closeSidebar() { TranslateTransition t = new TranslateTransition(Duration.seconds(0.3), sidebar); t.setToX(-250); t.play(); }
 
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName(type + " Overview");
+    @FXML
+    private void handleDebugAddProduct() {
+        System.out.println("--- DEBUG: Injecting new product for testing live data ---");
+        try {
+            // Thêm một cây đàn guitar mới với giá 1 USD
+            inventoryManager.addNewGuitar(
+                "Debug Test Guitar - Live", "Instrument", "VN", "Debug Brand", 1, new Date(), 1.0,
+                "Maple", "guitar", "Black", true, 
+                "electric", 6, "Strat"
+            );
+            // Cập nhật tất cả các View
+            loadDataToTable(); // Cập nhật bảng Product
+            updateHomeStats(); // Cập nhật 3 cái thẻ Home
+            System.out.println("--- DEBUG: Injection complete. ---");
+            showAlert(Alert.AlertType.INFORMATION, "DEBUG", "Đã thêm 1 sản phẩm 1 USD. Home Stats đã được cập nhật!");
 
-        switch (type){
-            case "Products":
-                // Sửa lỗi: Chỉ cần sử dụng XYChart.Data
-                series.getData().add(new XYChart.Data<>("Jan", 50));
-                series.getData().add(new XYChart.Data<>("Feb", 80));
-                series.getData().add(new XYChart.Data<>("Mar", 150));
-                revenueChart.setTitle("Monthly Product Import");
-                break;
-            case "Customers":
-                // Sửa lỗi: Chỉ cần sử dụng XYChart.Data
-                series.getData().add(new XYChart.Data<>("Jan", 20));
-                series.getData().add(new XYChart.Data<>("Feb", 45));
-                series.getData().add(new XYChart.Data<>("Mar", 90));
-                revenueChart.setTitle("Customers Growth");
-                break;
-            case "Revenue":
-                // Sửa lỗi: Chỉ cần sử dụng XYChart.Data
-                series.getData().add(new XYChart.Data<>("Jan", 5000));
-                series.getData().add(new XYChart.Data<>("Feb", 12000));
-                series.getData().add(new XYChart.Data<>("Mar", 25000));
-                revenueChart.setTitle("Monthly Revenue ($)");
-                break;
+        } catch (Exception e) {
+            System.err.println("DEBUG ERROR: " + e.getMessage());
         }
-        revenueChart.getData().add(series);
+    }
+
+    private void resetCardStyles() {
+        String defaultStyle = "-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);";
+        if (cardProduct != null) cardProduct.setStyle(defaultStyle);
+        if (cardCustomer != null) cardCustomer.setStyle(defaultStyle);
+        if (cardRevenue != null) cardRevenue.setStyle(defaultStyle);
     }
 }
