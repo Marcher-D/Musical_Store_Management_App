@@ -1,9 +1,8 @@
 package com.TamCa.store.controller;
 
-import com.TamCa.store.model.Customer;
-import com.TamCa.store.model.Employee;
-import com.TamCa.store.model.Product;
+import com.TamCa.store.model.*;
 import com.TamCa.store.service.InventoryManager; 
+import com.TamCa.store.dao.*;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,6 +17,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.transform.Rotate;
 import javafx.scene.layout.HBox;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
@@ -32,6 +33,7 @@ import javafx.collections.transformation.SortedList;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -132,6 +134,29 @@ public class DashboardController implements Initializable {
     @FXML private TextField txtNumOfDrumPieces, txtNumOfCymbals, txtHeadMaterial, txtShellMaterial; 
     @FXML private TextField txtCateAcc, txtCompatibleWith; 
 
+    // --- ORDER VIEW ---
+    @FXML private AnchorPane orderView;
+    @FXML private Button btnOrders; // Nút Sidebar
+    
+    // Order Info Panel (Left)
+    @FXML private TextField txtCustomerSearch;
+    @FXML private Label lblSelectedCustomerName;
+    @FXML private DatePicker dpSellDate;
+    @FXML private DatePicker dpDeliDate;
+    @FXML private TextArea txtDeliAddress;
+
+    // Cart Panel (Right)
+    @FXML private TextField txtProductSearch;
+    @FXML private TableView<OrderDetail> orderTable;
+    @FXML private Label lblOrderTotal;
+    
+    // Temporary Cart List
+    private ObservableList<OrderDetail> cartItems = FXCollections.observableArrayList();
+
+    // DAOs (Để truy vấn)
+    private CustomerDAO customerDAO = new CustomerDAO();
+    private OrderDAO orderDAO = new OrderDAO();
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -184,6 +209,9 @@ public class DashboardController implements Initializable {
                 cardRevenue.setStyle("-fx-background-color: #e8f6f3; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);");
             });
         }
+
+        setupOrderTable();
+        setupOrderViewLogic();
 
         showHome();
     }
@@ -739,5 +767,97 @@ public class DashboardController implements Initializable {
         sortedData.comparatorProperty().bind(productTable.comparatorProperty());
 
         productTable.setItems(sortedData);
+    }
+
+    private void setupOrderTable() {
+        if (orderTable == null) return;
+        
+        // Cần thêm cột Product Name, Quantity, Price, Total, Action (Button)
+        // Hiện tại, ta chỉ cần 4 cột hiển thị:
+        
+        // Column 1: Product Name (Lấy tên từ đối tượng Product trong OrderDetail)
+        TableColumn<OrderDetail, String> colProductName = new TableColumn<>("Product Name");
+        colProductName.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getProduct().getNamePro()));
+
+        // Column 2: Quantity
+        TableColumn<OrderDetail, Number> colQuantity = new TableColumn<>("Qty");
+        colQuantity.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getQuantity()));
+
+        // Column 3: Price At Sale
+        TableColumn<OrderDetail, Number> colPrice = new TableColumn<>("Price");
+        colPrice.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getPriceAtSale()));
+
+        // Column 4: Total
+        TableColumn<OrderDetail, Number> colTotal = new TableColumn<>("Total");
+        colTotal.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getTotalPrice()));
+
+        // Clear cột cũ nếu có, và add cột mới
+        orderTable.getColumns().setAll(colProductName, colQuantity, colPrice, colTotal);
+        orderTable.setItems(cartItems);
+    }
+
+    // Logic sẽ được gọi khi bấm nút 'Checkout'
+    @FXML
+    private void handleCheckout() {
+        if (cartItems.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Lỗi Order", "Giỏ hàng đang trống!");
+            return;
+        }
+        
+        // 1. Lấy thông tin Customer và Employee (Tạm thời Employee là Manager)
+        // ********* THIẾU LOGIC TÌM CUSTOMER *********
+        // (Tạm thời lấy Customer đầu tiên trong DB để test)
+        Customer customer = customerDAO.getAllCustomers().get(0); 
+        
+        // 2. Tạo Order object (Dùng SellDate, DeliDate, Address)
+        Date sellDate = new Date(); // Dùng ngày hiện tại
+        Date deliDate = new Date(); // Dùng ngày hiện tại (nên dùng DatePicker)
+        String address = "Online Order Address"; // Dùng txtDeliAddress.getText();
+        
+        Order newOrder = new Order("Processing", address, sellDate, deliDate, customer);
+        
+        // 3. Đổ items từ cart vào Order object
+        newOrder.setItems(new ArrayList<>(cartItems));
+        
+        // 4. Gọi DAO để tạo Order và trừ kho (TRANSACTION)
+        boolean success = orderDAO.createOrder(newOrder);
+
+        if (success) {
+            showAlert(Alert.AlertType.INFORMATION, "Thành Công!", "Đã tạo Order #" + newOrder.getOrderId() + ". Kho đã được trừ.");
+            cartItems.clear(); // Xóa giỏ hàng
+            updateHomeStats(); // Cập nhật lại Inventory Value trên Dashboard
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Lỗi DB", "Không thể tạo Order. Kiểm tra tồn kho!");
+        }
+    }
+
+    private void setupOrderViewLogic() {
+        // 1. Setup Default Dates
+        if (dpSellDate != null) dpSellDate.setValue(LocalDate.now());
+        if (dpDeliDate != null) dpDeliDate.setValue(LocalDate.now().plusDays(5)); // Default delivery 5 days later
+
+        // 2. Customer Search Listener
+        if (txtCustomerSearch != null) {
+            txtCustomerSearch.textProperty().addListener((obs, oldVal, newVal) -> {
+                // Khi người dùng gõ, tìm kiếm khách hàng
+                if (newVal != null && !newVal.trim().isEmpty()) {
+                    // Tạm thời gọi hàm search theo CSN (ID)
+                    Customer foundCustomer = customerDAO.getCustomerByCSN(newVal.trim());
+                    if (lblSelectedCustomerName != null) {
+                        lblSelectedCustomerName.setText(foundCustomer != null ? 
+                            "Selected: " + foundCustomer.getNameCus() + " (" + foundCustomer.getCSN() + ")" : 
+                            "Customer Not Found (Try C001, C002...)");
+                    }
+                } else {
+                    if (lblSelectedCustomerName != null) lblSelectedCustomerName.setText("No Customer Selected");
+                }
+            });
+        }
+        
+        // 3. Product Search Listener (Cho giỏ hàng)
+        if (txtProductSearch != null) {
+             // Logic này sẽ được implement khi bro làm nút Add To Cart
+        }
     }
 }

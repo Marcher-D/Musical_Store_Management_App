@@ -12,7 +12,7 @@ public class AccountDAO {
     private static final String BASE_DB_URL = "jdbc:mysql://localhost:3306"; 
     private static final String CONNECTION_PARAMS = "?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC"; 
     private static final String DB_USER = "root";       
-    private static final String DB_PASSWORD = "Peter@18122005"; 
+    private static final String DB_PASSWORD = "passcode"; 
     private static final String DATABASE_NAME = "musical_store_db";
     
     // --- DB CONNECTION METHOD ---
