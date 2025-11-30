@@ -97,6 +97,12 @@ public class DashboardController implements Initializable {
     @FXML private TableColumn<Customer, String> colCusEmail;
     @FXML private TableColumn<Customer, String> colCusAddress;
 
+    @FXML private TextField txtSearchCustomer;
+    // --- ADD CUSTOMER FORM ---
+    @FXML private AnchorPane addCustomerView;
+    @FXML private TextField txtCusNameForm, txtCusCSNForm, txtCusPhoneForm, txtCusEmailForm;
+    @FXML private TextArea txtCusAddressForm;
+
     // --- EMPLOYEE VIEW ---
     @FXML private AnchorPane employeeView;
     @FXML private Label lblTotalEmp;
@@ -109,6 +115,12 @@ public class DashboardController implements Initializable {
     @FXML private TableColumn<Employee, String> colEmpPos;
     @FXML private TableColumn<Employee, Integer> colEmpSal;
     @FXML private TableColumn<Employee, Date> colEmpDate;
+
+    @FXML private TextField txtSearchEmployee;
+    // --- ADD EMPLOYEE FORM ---
+    @FXML private AnchorPane addEmployeeView;
+    @FXML private TextField txtEmpIDForm, txtEmpNameForm, txtEmpPosForm, txtEmpSalForm;
+    @FXML private DatePicker dpEmpHireDateForm;
 
     // --- ADD PRODUCT FORM (Giữ nguyên các FXML) ---
     @FXML private AnchorPane addProductView; 
@@ -356,11 +368,12 @@ public class DashboardController implements Initializable {
     }
 
     @FXML private void showProducts() {
+
         loadProductData();
         // Cần cập nhật lại items cho table sau khi load, để search/sort hoạt động đúng
-        SortedList<Product> sortedData = new SortedList<>(new FilteredList<>(productList, p -> true));
-        sortedData.comparatorProperty().bind(productTable.comparatorProperty());
-        productTable.setItems(sortedData);
+        // SortedList<Product> sortedData = new SortedList<>(new FilteredList<>(productList, p -> true));
+        // sortedData.comparatorProperty().bind(productTable.comparatorProperty());
+        // productTable.setItems(sortedData);
         
         homeView.setVisible(false); 
         productView.setVisible(true); 
@@ -732,13 +745,6 @@ public class DashboardController implements Initializable {
     private void openSidebar() { TranslateTransition t = new TranslateTransition(Duration.seconds(0.3), sidebar); t.setToX(0); sidebar.toFront(); t.play(); }
     private void closeSidebar() { TranslateTransition t = new TranslateTransition(Duration.seconds(0.3), sidebar); t.setToX(-250); t.play(); }
 
-    // private void resetCardStyles() {
-    //     String defaultStyle = "-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);";
-    //     if (cardProduct != null) cardProduct.setStyle(defaultStyle);
-    //     if (cardCustomer != null) cardCustomer.setStyle(defaultStyle);
-    //     if (cardRevenue != null) cardRevenue.setStyle(defaultStyle);
-    // }
-
     private void setupSearchAndSort() {
 
         FilteredList<Product> filteredData = new FilteredList<>(productList, p -> true);
@@ -767,6 +773,186 @@ public class DashboardController implements Initializable {
         sortedData.comparatorProperty().bind(productTable.comparatorProperty());
 
         productTable.setItems(sortedData);
+
+        // Logic search Customer
+        if (customerList != null){
+            FilteredList<Customer> filteredCus = new FilteredList<>(customerList, p -> true);
+                
+                if(txtSearchCustomer != null){
+                    txtSearchCustomer.textProperty().addListener((observable, oldValue, newValue) -> {
+                        filteredCus.setPredicate(cus -> {
+                            if (newValue == null || newValue.isEmpty()) return true;
+                            String lower = newValue.toLowerCase();
+
+                            if (cus.getNameCus().toLowerCase().contains(lower)) return true;
+                            if (cus.getCSN().toLowerCase().contains(lower)) return true;
+                            if (cus.getPhoneNum().toLowerCase().contains(lower)) return true;
+                            return false;
+                        });
+                    });
+                }
+
+                if (customerTable != null) {
+                    SortedList<Customer> sortedCus = new SortedList<>(filteredCus);
+                    sortedCus.comparatorProperty().bind(customerTable.comparatorProperty());
+                    customerTable.setItems(sortedCus);
+                }
+            }
+
+        // --- EMPLOYEE SEARCH ---
+        if (employeeList != null) {
+            FilteredList<Employee> filteredEmp = new FilteredList<>(employeeList, p -> true);
+            
+            // Listener cho ô search Employee
+            if (txtSearchEmployee != null) {
+                txtSearchEmployee.textProperty().addListener((observable, oldValue, newValue) -> {
+                    filteredEmp.setPredicate(emp -> {
+                        if (newValue == null || newValue.isEmpty()) return true;
+                        String lower = newValue.toLowerCase();
+                        
+                        if (emp.getNameEmp().toLowerCase().contains(lower)) return true;
+                        if (emp.getEID().toLowerCase().contains(lower)) return true;
+                        if (emp.getPosEmp().toLowerCase().contains(lower)) return true;
+                        return false;
+                    });
+                });
+            }
+            // Bind vào bảng
+            if (employeeTable != null) {
+                SortedList<Employee> sortedEmp = new SortedList<>(filteredEmp);
+                sortedEmp.comparatorProperty().bind(employeeTable.comparatorProperty());
+                employeeTable.setItems(sortedEmp);
+            }
+        }
+    }
+
+    // CUSTOMER, những hàm liên quan để add Customer mới
+    @FXML 
+    private void showAddCustomerForm() {
+        
+        if(customerTable != null) customerTable.setVisible(false);
+        addCustomerView.setVisible(true); 
+        addCustomerView.toFront();
+        
+        // Gọi InventoryManager tính ID tiếp theo
+        String nextID = inventoryManager.generateNextCustomerId(); 
+        
+        if (txtCusCSNForm != null) {
+            txtCusCSNForm.setText(nextID); 
+            txtCusCSNForm.setEditable(false); 
+            txtCusCSNForm.setStyle("-fx-background-color: #ecf0f1; -fx-text-fill: #7f8c8d;"); // Làm mờ đi cho biết là Read-only
+        }
+
+        if (txtCusNameForm != null) txtCusNameForm.clear(); 
+        if (txtCusPhoneForm != null) txtCusPhoneForm.clear(); 
+        if (txtCusEmailForm != null) txtCusEmailForm.clear(); 
+        if (txtCusAddressForm != null) txtCusAddressForm.clear();
+    }
+
+    @FXML void handleCancelAddCustomer() {
+        addCustomerView.setVisible(false);
+        if(customerTable != null) customerTable.setVisible(true);
+    }
+
+    @FXML void handleSaveCustomer(){
+        
+        String name = txtCusNameForm.getText().trim();
+        String csn = txtCusCSNForm.getText().trim(); // CSN là ID tự sinh (ví dụ: C004)
+
+        if (name.isEmpty() || csn.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Missing Customer Name or CSN", "Try harder bro!");
+            return; 
+        }
+
+        boolean success = inventoryManager.addNewCustomer(
+            txtCusCSNForm.getText().trim(),
+            txtCusNameForm.getText().trim(),
+            txtCusPhoneForm.getText().trim(),
+            txtCusEmailForm.getText().trim(),
+            txtCusAddressForm.getText().trim()
+        );
+
+        if (success){
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Customer added successfully!");
+            loadCustomerData(); 
+            
+            handleCancelAddCustomer(); // Đóng form
+            updateHomeStats(); // Update số liệu Dashboard
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to add customer. CSN might be duplicate.");
+        }   
+    }
+
+    // EMPLOYEE, những hàm liên quan để add Employee mới
+    @FXML 
+    private void showAddEmployeeForm() {
+        // 1. Ẩn bảng, hiện form
+        if(employeeTable != null) employeeTable.setVisible(false);
+        addEmployeeView.setVisible(true); 
+        addEmployeeView.toFront();
+        
+        // Tự động sinh ID (E001, E002...)
+        String nextID = inventoryManager.generateNextEmployeeId();
+
+        if (txtEmpIDForm != null) {
+            txtEmpIDForm.setText(nextID);
+            txtEmpIDForm.setEditable(false); // Không cho sửa
+            txtEmpIDForm.setStyle("-fx-background-color: #ecf0f1; -fx-text-fill: #7f8c8d;");
+        }
+
+        if (txtEmpNameForm != null) txtEmpNameForm.clear();
+        if (txtEmpPosForm != null) txtEmpPosForm.clear();
+        if (txtEmpSalForm != null) txtEmpSalForm.clear();
+        
+        // Mặc định ngày vào làm là Hôm nay
+        if (dpEmpHireDateForm != null) dpEmpHireDateForm.setValue(LocalDate.now());
+    }
+
+    @FXML 
+    private void handleCancelAddEmployee() {
+        addEmployeeView.setVisible(false);
+        if(employeeTable != null) employeeTable.setVisible(true);
+    }
+
+    @FXML 
+    private void handleSaveEmployee() {
+
+        if (txtEmpIDForm == null || txtEmpNameForm == null) {
+             showAlert(Alert.AlertType.ERROR, "System Error", "Lỗi FXML: Chưa gán fx:id cho Employee Form!");
+             return;
+        }
+        String eid = txtEmpIDForm.getText().trim(); // Lấy ID tự sinh
+        String name = txtEmpNameForm.getText().trim();
+        
+        if (eid.isEmpty() || name.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Missing Info", "What's your name bro?!");
+            return;
+        }
+        
+        try {
+            // Validate lương phải là số
+            int salary = Integer.parseInt(txtEmpSalForm.getText().trim());
+            
+            // Lấy ngày (hoặc mặc định là nay)
+            LocalDate localDate = dpEmpHireDateForm.getValue();
+            if (localDate == null) localDate = LocalDate.now();
+            Date hireDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            // Gọi Manager để lưu
+            boolean success = inventoryManager.addNewEmployee(eid, name, txtEmpPosForm.getText().trim(), salary, hireDate);
+
+            if (success) {
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Employee " + eid + " added successfully!");
+                loadEmployeeData(); 
+                handleCancelAddEmployee(); 
+                updateHomeStats();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to add employee (Check ID or Salary rule).");
+            }
+            
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Invalid Input", "Salary must be a valid number (e.g. 5000).");
+        }
     }
 
     private void setupOrderTable() {

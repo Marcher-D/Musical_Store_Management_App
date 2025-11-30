@@ -17,7 +17,7 @@ public class App extends Application {
     // Database connection constants used for the test method
     private static final String DB_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_USER = "root";       
-    private static final String DB_PASSWORD = "Peter@18122005"; // *** REPLACE WITH YOUR ACTUAL PASSWORD ***
+    private static final String DB_PASSWORD = "passcode"; 
     private static final String DATABASE_NAME = "musical_store_db";
 
     @Override

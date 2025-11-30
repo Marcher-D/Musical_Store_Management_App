@@ -33,7 +33,28 @@ public class EmployeeManager {
             System.err.println("Business Rule Violated: Salary cannot be less than 1000.");
             return false;
         }
+        if (employeeDAO.getEmployeeByEID(employee.getEID()) != null) {
+             System.err.println("Error: Employee ID " + employee.getEID() + " already exists.");
+             return false;
+        }
         return employeeDAO.addEmployee(employee);
+    }
+
+    public String generateNextEmployeeId() {
+        List<Employee> list = getAllEmployees();
+        if (list.isEmpty()) return "E001";
+
+        int maxId = 0;
+        for (Employee emp : list) {
+            try {
+                String numPart = emp.getEID().replaceAll("\\D+", "");
+                if (!numPart.isEmpty()) {
+                    int id = Integer.parseInt(numPart);
+                    if (id > maxId) maxId = id;
+                }
+            } catch (Exception e) { continue; }
+        }
+        return String.format("E%03d", maxId + 1);
     }
     
     /**

@@ -35,6 +35,25 @@ public class CustomerManager {
         }
         return customerDAO.addCustomer(customer);
     }
+
+    public String generateNextCustomerId() {
+        List<Customer> list = getAllCustomers();
+        if (list.isEmpty()) return "C001";
+        
+        int maxId = 0;
+        for (Customer c : list) {
+            try {
+                // Cắt bỏ chữ "C", lấy phần số
+                String numPart = c.getCSN().replaceAll("\\D+", ""); 
+                if (!numPart.isEmpty()) {
+                    int id = Integer.parseInt(numPart);
+                    if (id > maxId) maxId = id;
+                }
+            } catch (Exception e) { continue; } 
+        }
+        // Format lại thành C00x
+        return String.format("C%03d", maxId + 1);
+    }
     
     /**
      * Cập nhật thông tin khách hàng.

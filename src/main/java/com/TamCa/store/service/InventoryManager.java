@@ -1,8 +1,7 @@
 package com.TamCa.store.service;
 
 // Import the DAOs from the new package
-import com.TamCa.store.dao.ProductDAO;
-import com.TamCa.store.dao.AccountDAO;
+import com.TamCa.store.dao.*;
 
 import com.TamCa.store.model.*; 
 import java.util.List;
@@ -19,6 +18,7 @@ public class InventoryManager {
     // Declare DAO objects
     private final ProductDAO productDAO;
     private final AccountDAO accountDAO;
+
     private final CustomerManager customerManager; // MỚI
     private final EmployeeManager employeeManager; // MỚI
 
@@ -26,29 +26,16 @@ public class InventoryManager {
         // Initialize DAOs
         this.productDAO = new ProductDAO();
         this.accountDAO = new AccountDAO();
+
         this.customerManager = new CustomerManager(); // KHỞI TẠO MỚI
         this.employeeManager = new EmployeeManager(); // KHỞI TẠO MỚI
-        
-        // ProductDAO automatically sets up the database upon initialization
     }
-    
-    // --- ACCOUNT FUNCTIONALITY (Delegated to AccountDAO) ---
 
     /**
      * Checks login credentials by calling AccountDAO.
      */
     public String checkLogin(String username, String password) {
         return accountDAO.checkLogin(username, password);
-    }
-
-    // --- CUSTOMER FUNCTIONALITY (Delegated to CustomerManager) --- // MỚI
-    public List<Customer> getAllCustomers() {
-        return customerManager.getAllCustomers();
-    }
-    
-    // --- EMPLOYEE FUNCTIONALITY (Delegated to EmployeeManager) --- // MỚI
-    public List<Employee> getAllEmployees() {
-        return employeeManager.getAllEmployees();
     }
     
     // --- ADD PRODUCT FUNCTIONALITY (Uses ID generation logic and calls ProductDAO) ---
@@ -255,5 +242,44 @@ public class InventoryManager {
     
     public Map<String, Double> getMonthlyImportStats() {
         return productDAO.getMonthlyImportStats();
+    }
+
+    // --- CUSTOMER DELEGATION ---
+    public List<Customer> getAllCustomers() {
+        return customerManager.getAllCustomers();
+    }
+
+    // Hàm này được Controller gọi để lấy ID tự động điền vào Form
+    public String generateNextCustomerId() {
+        return customerManager.generateNextCustomerId();
+    }
+
+    public boolean addNewCustomer(String csn, String name, String phone, String email, String address) {
+        Customer newCus = new Customer(name, csn, phone, email, address);
+        return customerManager.addNewCustomer(newCus);
+    }
+
+    // --- EMPLOYEE DELEGATION ---
+    public List<Employee> getAllEmployees() {
+        return employeeManager.getAllEmployees();
+    }
+
+    // Hàm này được Controller gọi
+    public String generateNextEmployeeId() {
+        return employeeManager.generateNextEmployeeId();
+    }
+
+    public boolean addNewEmployee(String eid, String name, String pos, int salary, Date hireDate) {
+        Employee newEmp = new Employee(name, eid, pos, salary, hireDate);
+        return employeeManager.addNewEmployee(newEmp);
+    }
+    
+    public int getTotalSalary(){
+        List<Employee> list = getAllEmployees();
+        int total = 0;
+        for (Employee e : list){
+            total += e.getSalEmp();
+        }
+        return total;
     }
 }
