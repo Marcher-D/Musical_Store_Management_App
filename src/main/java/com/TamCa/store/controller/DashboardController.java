@@ -164,10 +164,7 @@ public class DashboardController implements Initializable {
     @FXML private TableView<Order.OrderDetail> orderTable; // Dùng Inner Class
     @FXML private Label lblOrderTotal;
     
-    // Data (RAM)
-    // Giỏ hàng tạm thời
     private ObservableList<Order.OrderDetail> cartItems = FXCollections.observableArrayList();
-    // Khách hàng đang chọn
     private Customer selectedCustomer = null;
 
     // DAOs (Để truy vấn)
@@ -230,28 +227,23 @@ public class DashboardController implements Initializable {
         setupOrderTable();
         setupOrderLogic();
 
-        System.out.println("DEBUG CHECK: orderView is " + orderView);
-
         showHome();
     }
     
-    // ==================== LOGIC DATA LOADING (DB THẬT) ====================
+    // LOGIC DATA LOADING 
     
-    // Tải dữ liệu Product
     private void loadProductData(){
         List<Product> items = inventoryManager.getAllItems();
         productList.setAll(items);
         System.out.println("Product Data refreshed. Count: " + productList.size());
     }
 
-    // Tải dữ liệu Customer (MỚI - Dùng DB)
     private void loadCustomerData() {
         List<Customer> customers = customerManager.getAllCustomers();
         customerList = FXCollections.observableArrayList(customers);
         System.out.println("Customer Data loaded. Count: " + customerList.size());
     }
     
-    // Tải dữ liệu Employee (MỚI - Dùng DB)
     private void loadEmployeeData() {
         List<Employee> employees = employeeManager.getAllEmployees();
         employeeList = FXCollections.observableArrayList(employees);
@@ -259,7 +251,7 @@ public class DashboardController implements Initializable {
     }
 
 
-    // ==================== LOGIC TABLE SETUP & STATS ====================
+    // LOGIC TABLE SETUP & STATS 
 
     private void setupProductTable() {
         
@@ -595,13 +587,13 @@ public class DashboardController implements Initializable {
     private void handleDebugAddProduct() {
         System.out.println("--- DEBUG: Injecting new product for testing live data ---");
         try {
-            // Thêm một cây đàn guitar mới với giá 1 USD
+            
             inventoryManager.addNewGuitar(
                 "Debug Test Guitar - Live", "Instrument", "VN", "Debug Brand", 1, new Date(), 1.0,
                 "Maple", "guitar", "Black", true, 
                 "electric", 6, "Strat"
             );
-            // Cập nhật tất cả các View
+            
             loadProductData(); 
             updateHomeStats(); 
             System.out.println("--- DEBUG: Injection complete. ---");
@@ -661,7 +653,7 @@ public class DashboardController implements Initializable {
                 break;
         }
         
-        // --- VẼ CHART: LẤP ĐẦY 12 THÁNG BẰNG DỮ LIỆU CÓ SẴN (hoặc 0) ---
+        // LẤP ĐẦY 12 THÁNG BẰNG DỮ LIỆU CÓ SẴN
         for (String month : allMonths) {
             Double value = sourceData.getOrDefault(month, 0.0);
             series.getData().add(new XYChart.Data<>(month, value));
@@ -671,14 +663,13 @@ public class DashboardController implements Initializable {
     }
     
     
-    // --- LOGIC BEST SELLER & 3D ANIMATION (Giữ nguyên logic tạo dữ liệu giả) ---
+    // LOGIC BEST SELLER & 3D ANIMATION 
 
     private void loadBestSellers() {
         if (pnBestSellers == null) return;
         
         pnBestSellers.getChildren().clear();
         
-        // Thêm dữ liệu giả (Fake Data)
         pnBestSellers.getChildren().add(createBestSellerCard("Fender Stratocaster", "1,500", "guitar.png"));
         pnBestSellers.getChildren().add(createBestSellerCard("Nord Stage 4 Piano", "12,000", "piano.png"));
         pnBestSellers.getChildren().add(createBestSellerCard("Pearl Export Drums", "950", "drum.png"));
