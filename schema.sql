@@ -1,206 +1,245 @@
--- Tệp này chứa mã SQL để XÓA và TẠO lại toàn bộ cấu trúc database.
-
--- 1. XÓA VÀ TẠO LẠI DATABASE
+-- ==================================================
+-- 1. DATABASE SETUP (RESET)
+-- ==================================================
 DROP DATABASE IF EXISTS musical_store_db;
-CREATE DATABASE musical_store_db;
+CREATE DATABASE musical_store_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE musical_store_db;
 
--- Tệp SQL này được tạo dựa trên các hằng số và câu lệnh CREATE TABLE 
--- trong ProductDAO.java, CustomerDAO.java và EmployeeDAO.java.
+-- ==================================================
+-- 2. TABLE CREATION
+-- ==================================================
 
--- ====================================================================
--- 1. CẤU HÌNH BAN ĐẦU
--- ====================================================================
-
--- Tên Database được định nghĩa trong các file Java
-CREATE DATABASE IF NOT EXISTS musical_store_db 
-CHARACTER SET utf8mb4 
-COLLATE utf8mb4_unicode_ci;
-
-USE musical_store_db;
-
--- ====================================================================
--- 2. XOÁ CÁC BẢNG NẾU TỒN TẠI (Đảm bảo chạy sạch)
--- ====================================================================
--- Xóa các bảng chi tiết trước để tránh lỗi ràng buộc khoá ngoại (Foreign Key)
-DROP TABLE IF EXISTS DrumKitDetail;
-DROP TABLE IF EXISTS KeyboardDetail;
-DROP TABLE IF EXISTS PianoDetail;
-DROP TABLE IF EXISTS GuitarDetail;
-DROP TABLE IF EXISTS AccessoryDetail;
-DROP TABLE IF EXISTS Instrument;
-DROP TABLE IF EXISTS Product;
-DROP TABLE IF EXISTS Customer; -- Bổ sung DROP
-DROP TABLE IF EXISTS Employee; -- Bổ sung DROP
-DROP TABLE IF EXISTS Account; 
-
--- ====================================================================
--- 3. TẠO CÁC BẢNG CHÍNH VÀ CHI TIẾT
--- ====================================================================
-
--- Bảng 1: Product (Thông tin chung cho mọi sản phẩm)
+-- A. SẢN PHẨM & KHO
 CREATE TABLE Product (
-    id VARCHAR(10) PRIMARY KEY,
-    namePro VARCHAR(255) NOT NULL,
-    catePro VARCHAR(50) NOT NULL, -- Category (e.g., 'Instrument', 'Accessory')
-    origin VARCHAR(100),
-    brand VARCHAR(100),
-    quantityInStock INT NOT NULL,
-    importDate DATE,
+    id VARCHAR(10) PRIMARY KEY, 
+    namePro VARCHAR(255) NOT NULL, 
+    catePro VARCHAR(50) NOT NULL, 
+    origin VARCHAR(100), 
+    brand VARCHAR(100), 
+    quantityInStock INT NOT NULL, 
+    importDate DATE, 
     sellingPrice DOUBLE NOT NULL
 );
 
--- Bảng 2: Instrument (Chi tiết chung cho Nhạc cụ)
 CREATE TABLE Instrument (
-    product_id VARCHAR(10) PRIMARY KEY,
-    cateIns VARCHAR(50) NOT NULL, -- Sub Category (e.g., 'Guitar', 'Piano', 'Drumkit')
-    mateIns VARCHAR(100),
-    colorIns VARCHAR(50),
-    isElectric BOOLEAN,
+    product_id VARCHAR(10) PRIMARY KEY, 
+    cateIns VARCHAR(50) NOT NULL, 
+    mateIns VARCHAR(100), 
+    colorIns VARCHAR(50), 
+    isElectric BOOLEAN, 
     FOREIGN KEY (product_id) REFERENCES Product(id) ON DELETE CASCADE
 );
 
--- Bảng 3: GuitarDetail (Chi tiết cụ thể cho Guitar)
+-- Bảng chi tiết từng loại
 CREATE TABLE GuitarDetail (
-    product_id VARCHAR(10) PRIMARY KEY,
-    cateGui VARCHAR(100),
-    strNumGui INT,
-    bodyShapeGui VARCHAR(100),
+    product_id VARCHAR(10) PRIMARY KEY, cateGui VARCHAR(100), strNumGui INT, bodyShapeGui VARCHAR(100), 
     FOREIGN KEY (product_id) REFERENCES Instrument(product_id) ON DELETE CASCADE
 );
-
--- Bảng 4: PianoDetail
 CREATE TABLE PianoDetail (
-    product_id VARCHAR(10) PRIMARY KEY,
-    catePi VARCHAR(100),
-    keyNumPi INT,
-    hasPedal BOOLEAN,
+    product_id VARCHAR(10) PRIMARY KEY, catePi VARCHAR(100), keyNumPi INT, hasPedal BOOLEAN, 
     FOREIGN KEY (product_id) REFERENCES Instrument(product_id) ON DELETE CASCADE
 );
-
--- Bảng 5: KeyboardDetail
 CREATE TABLE KeyboardDetail (
-    product_id VARCHAR(10) PRIMARY KEY,
-    cateKey VARCHAR(100),
-    keyNumKey INT,
-    hasLCD BOOLEAN,
+    product_id VARCHAR(10) PRIMARY KEY, cateKey VARCHAR(100), keyNumKey INT, hasLCD BOOLEAN, 
     FOREIGN KEY (product_id) REFERENCES Instrument(product_id) ON DELETE CASCADE
 );
-
--- Bảng 6: DrumKitDetail
 CREATE TABLE DrumKitDetail (
-    product_id VARCHAR(10) PRIMARY KEY,
-    numOfDrumPieces INT,
-    numOfCymbals INT,
-    headMaterial VARCHAR(100),
-    shellMaterial VARCHAR(100),
+    product_id VARCHAR(10) PRIMARY KEY, numOfDrumPieces INT, numOfCymbals INT, headMaterial VARCHAR(100), shellMaterial VARCHAR(100), 
     FOREIGN KEY (product_id) REFERENCES Instrument(product_id) ON DELETE CASCADE
 );
-
--- Bảng 7: AccessoryDetail (Chi tiết cụ thể cho Phụ kiện)
 CREATE TABLE AccessoryDetail (
-    product_id VARCHAR(10) PRIMARY KEY,
-    cateAcc VARCHAR(100),
-    mateAcc VARCHAR(100), 
-    colorAcc VARCHAR(50),
-    compatibleWith VARCHAR(100), 
+    product_id VARCHAR(10) PRIMARY KEY, cateAcc VARCHAR(100), mateAcc VARCHAR(100), colorAcc VARCHAR(50), compatibleWith VARCHAR(100), 
     FOREIGN KEY (product_id) REFERENCES Product(id) ON DELETE CASCADE
 );
 
--- Bảng 8: Account (Dùng cho chức năng Đăng nhập - LoginController/AccountDAO)
-CREATE TABLE Account (
-    username VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(50) NOT NULL,
-    role VARCHAR(20) NOT NULL -- Manager, Staff
-);
-
--- Bảng 9: Customer (Dựa trên Customer.java)
+-- B. CON NGƯỜI & TÀI KHOẢN
 CREATE TABLE Customer (
-    CSN VARCHAR(50) PRIMARY KEY, -- Mã số Khách hàng (Sử dụng CSN làm khóa chính)
-    nameCus VARCHAR(255) NOT NULL,
-    phoneNum VARCHAR(20),
-    emailCus VARCHAR(255),
+    csn VARCHAR(20) PRIMARY KEY, 
+    nameCus VARCHAR(255) NOT NULL, 
+    phoneNum VARCHAR(20), 
+    emailCus VARCHAR(100), 
     addCus VARCHAR(255)
 );
 
--- Bảng 10: Employee (Dựa trên Employee.java)
 CREATE TABLE Employee (
-    EID VARCHAR(50) PRIMARY KEY, -- Mã số Nhân viên (Sử dụng EID làm khóa chính)
-    nameEmp VARCHAR(255) NOT NULL,
-    posEmp VARCHAR(100), -- Vị trí (e.g., Manager, Staff, IT)
-    salEmp INT, -- Mức lương
-    hireDate DATE -- Ngày tuyển dụng
+    eid VARCHAR(20) PRIMARY KEY, 
+    nameEmp VARCHAR(255) NOT NULL, 
+    posEmp VARCHAR(50), 
+    salEmp INT, 
+    hireDate DATE
 );
 
+CREATE TABLE Account (
+    username VARCHAR(50) PRIMARY KEY, 
+    password VARCHAR(50) NOT NULL, 
+    role VARCHAR(20) NOT NULL
+);
 
--- ====================================================================
--- 4. INSERT DỮ LIỆU MẪU (TEST DATA)
--- ====================================================================
+-- C. ĐƠN HÀNG (ORDER TRANSACTION)
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT, 
+    status VARCHAR(50), 
+    sellDate DATE, 
+    deliDate DATE, 
+    deliAdd VARCHAR(255), 
+    customer_csn VARCHAR(20), 
+    FOREIGN KEY (customer_csn) REFERENCES Customer(csn) ON DELETE SET NULL
+);
 
--- 4.1. Dữ liệu mẫu cho Đăng nhập
-INSERT INTO Account (username, password, role) VALUES ('admin', '123', 'Manager');
-INSERT INTO Account (username, password, role) VALUES ('staff', '123', 'Staff');
+CREATE TABLE OrderDetail (
+    order_detail_id INT PRIMARY KEY AUTO_INCREMENT, 
+    order_id INT NOT NULL, 
+    product_id VARCHAR(10) NOT NULL, 
+    quantity INT NOT NULL, 
+    price_at_sale DOUBLE NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE, 
+    FOREIGN KEY (product_id) REFERENCES Product(id) ON DELETE NO ACTION
+);
 
--- 4.2. Dữ liệu mẫu cho Employee
-INSERT INTO Employee (EID, nameEmp, posEmp, salEmp, hireDate) VALUES 
-('E001', 'Trần Văn Mạnh', 'Manager', 5000, '2020-01-15') ON DUPLICATE KEY UPDATE EID=EID, salEmp=5000;
-INSERT INTO Employee (EID, nameEmp, posEmp, salEmp, hireDate) VALUES 
-('E002', 'Nguyễn Thị Bích', 'Sales Staff', 1500, '2023-05-20') ON DUPLICATE KEY UPDATE EID=EID, salEmp=1500;
-INSERT INTO Employee (EID, nameEmp, posEmp, salEmp, hireDate) VALUES 
-('E003', 'Lê Hữu Dũng', 'Technician', 2200, '2022-11-01') ON DUPLICATE KEY UPDATE EID=EID, salEmp=2200;
+-- ==================================================
+-- 3. DATA SEEDING (DỮ LIỆU MẪU)
+-- ==================================================
 
--- 4.3. Dữ liệu mẫu cho Customer
-INSERT INTO Customer (CSN, nameCus, phoneNum, emailCus, addCus) VALUES 
-('C001', 'Phạm Anh Khoa', '0901234567', 'khoa.p@mail.com', '123 Đường Láng, Hà Nội') ON DUPLICATE KEY UPDATE CSN=CSN;
-INSERT INTO Customer (CSN, nameCus, phoneNum, emailCus, addCus) VALUES 
-('C002', 'Đào Thị Minh', '0987654321', 'minh.dao@mail.com', '456 Phố Huế, Hà Nội') ON DUPLICATE KEY UPDATE CSN=CSN;
-INSERT INTO Customer (CSN, nameCus, phoneNum, emailCus, addCus) VALUES 
-('C003', 'Vũ Hoàng Nam', '0912345678', 'nam.vu@mail.com', '789 Quận 1, TP.HCM') ON DUPLICATE KEY UPDATE CSN=CSN;
+-- A. NHÂN VIÊN & TÀI KHOẢN TEAM
+-- (Password là MSSV như yêu cầu)
+
+-- 1. Phan Anh Minh (Manager)
+INSERT INTO Employee VALUES ('E001', 'Phan Anh Minh', 'Manager', 5000, '2023-01-01');
+INSERT INTO Account VALUES ('minh', '10423191', 'Manager');
+
+-- 2. Le Ngoc Khang Duy (Staff)
+INSERT INTO Employee VALUES ('E002', 'Le Ngoc Khang Duy', 'Staff', 3500, '2023-05-15');
+INSERT INTO Account VALUES ('duy', '10423024', 'Staff');
+
+-- 3. Le Tri Dung (Staff)
+INSERT INTO Employee VALUES ('E003', 'Le Tri Dung', 'Staff', 3500, '2023-06-20');
+INSERT INTO Account VALUES ('dung', '10423022', 'Staff');
 
 
--- 4.4. Dữ liệu mẫu cho Product (Giữ nguyên ID, giá trị và cấu trúc ban đầu)
+-- B. KHÁCH HÀNG (10 Người để test Search)
+INSERT INTO Customer VALUES ('C001', 'Nguyen Van A', '0901234567', 'vana@gmail.com', 'District 1, HCMC');
+INSERT INTO Customer VALUES ('C002', 'Tran Thi B', '0912345678', 'bibi@gmail.com', 'Hanoi City');
+INSERT INTO Customer VALUES ('C003', 'Le Van C', '0988888888', 'vip@gmail.com', 'Danang City');
+INSERT INTO Customer VALUES ('C004', 'Pam Yeu Oi', '0999999999', 'pam@gmail.com', 'Vinhome Grand Park');
+INSERT INTO Customer VALUES ('C005', 'John Wick', '0911911911', 'john@continental.com', 'Unknown Location');
+INSERT INTO Customer VALUES ('C006', 'Tony Stark', '0123456789', 'ironman@avengers.com', 'Stark Tower, NYC');
+INSERT INTO Customer VALUES ('C007', 'Doreamon', '0000000000', 'cat@future.jp', 'Tokyo, Japan');
+INSERT INTO Customer VALUES ('C008', 'Sontung MTP', '0977777777', 'mtp@sky.vn', 'Thai Binh, Vietnam');
+INSERT INTO Customer VALUES ('C009', 'Hieuthuhai', '0966666666', 'hieu@rapper.vn', 'Ho Chi Minh City');
+INSERT INTO Customer VALUES ('C010', 'Mono', '0955555555', 'mono@onion.vn', 'Ho Chi Minh City');
 
--- Sản phẩm 1: Guitar (ID: 111001)
-SET @prod_id_g = '111001';
-INSERT INTO Product (id, namePro, catePro, origin, brand, quantityInStock, importDate, sellingPrice)
-VALUES (@prod_id_g, 'Fender Stratocaster Classic', 'Instrument', 'USA', 'Fender', 5, '2024-05-10', 1500.00)
-ON DUPLICATE KEY UPDATE id=id;
-INSERT INTO Instrument (product_id, cateIns, mateIns, colorIns, isElectric)
-VALUES (@prod_id_g, 'Guitar', 'Alder', 'Sunburst', 1)
-ON DUPLICATE KEY UPDATE product_id=product_id;
-INSERT INTO GuitarDetail (product_id, cateGui, strNumGui, bodyShapeGui)
-VALUES (@prod_id_g, 'Electric', 6, 'Stratocaster')
-ON DUPLICATE KEY UPDATE product_id=product_id;
 
--- Sản phẩm 2: Piano (ID: 112001)
-SET @prod_id_p = '112001';
-INSERT INTO Product (id, namePro, catePro, origin, brand, quantityInStock, importDate, sellingPrice)
-VALUES (@prod_id_p, 'Yamaha Grand C7', 'Instrument', 'Japan', 'Yamaha', 1, '2023-12-01', 35000.00)
-ON DUPLICATE KEY UPDATE id=id;
-INSERT INTO Instrument (product_id, cateIns, mateIns, colorIns, isElectric)
-VALUES (@prod_id_p, 'Piano', 'Spruce/Maple', 'Black', 0)
-ON DUPLICATE KEY UPDATE product_id=product_id;
-INSERT INTO PianoDetail (product_id, catePi, keyNumPi, hasPedal)
-VALUES (@prod_id_p, 'Grand', 88, 1)
-ON DUPLICATE KEY UPDATE product_id=product_id;
+-- C. SẢN PHẨM (Rải rác 12 tháng năm 2025)
 
--- Sản phẩm 3: Accessory (ID: 115001)
-SET @prod_id_a = '115001';
-INSERT INTO Product (id, namePro, catePro, origin, brand, quantityInStock, importDate, sellingPrice)
-VALUES (@prod_id_a, 'D Addario EXL110 Strings', 'Accessory', 'USA', 'D Addario', 100, '2024-07-25', 10.50)
-ON DUPLICATE KEY UPDATE id=id;
-INSERT INTO AccessoryDetail (product_id, cateAcc, mateAcc, colorAcc, compatibleWith)
-VALUES (@prod_id_a, 'Strings', 'Nickel Plated Steel', 'Silver', 'Electric Guitar')
-ON DUPLICATE KEY UPDATE product_id=product_id;
+-- --- GUITARS (111xxx) ---
+-- Tháng 1
+INSERT INTO Product VALUES ('111001', 'Fender Stratocaster', 'Instrument', 'USA', 'Fender', 10, '2025-01-15', 1500.0);
+INSERT INTO Instrument VALUES ('111001', 'guitar', 'Alder', 'Sunburst', 1);
+INSERT INTO GuitarDetail VALUES ('111001', 'Electric', 6, 'Stratocaster');
 
--- Sản phẩm 4: DrumKit (ID: 114001)
-SET @prod_id_d = '114001';
-INSERT INTO Product (id, namePro, catePro, origin, brand, quantityInStock, importDate, sellingPrice)
-VALUES (@prod_id_d, 'Pearl Roadshow Drum Kit', 'Instrument', 'China', 'Pearl', 3, '2024-03-20', 650.00)
-ON DUPLICATE KEY UPDATE id=id;
-INSERT INTO Instrument (product_id, cateIns, mateIns, colorIns, isElectric)
-VALUES (@prod_id_d, 'Drumkit', 'Poplar', 'Wine Red', 0)
-ON DUPLICATE KEY UPDATE product_id=product_id;
-INSERT INTO DrumKitDetail (product_id, numOfDrumPieces, numOfCymbals, headMaterial, shellMaterial)
-VALUES (@prod_id_d, 5, 2, 'Mylar', 'Poplar Wood')
-ON DUPLICATE KEY UPDATE product_id=product_id;
+-- Tháng 4
+INSERT INTO Product VALUES ('111002', 'Gibson Les Paul Standard', 'Instrument', 'USA', 'Gibson', 5, '2025-04-12', 2500.0);
+INSERT INTO Instrument VALUES ('111002', 'guitar', 'Mahogany', 'Gold Top', 1);
+INSERT INTO GuitarDetail VALUES ('111002', 'Electric', 6, 'Single Cut');
+
+-- Tháng 6
+INSERT INTO Product VALUES ('111003', 'Ibanez RG550', 'Instrument', 'Japan', 'Ibanez', 12, '2025-06-20', 999.0);
+INSERT INTO Instrument VALUES ('111003', 'guitar', 'Basswood', 'Neon Purple', 1);
+INSERT INTO GuitarDetail VALUES ('111003', 'Electric', 6, 'Superstrat');
+
+-- Tháng 7
+INSERT INTO Product VALUES ('111004', 'Taylor 314ce', 'Instrument', 'USA', 'Taylor', 8, '2025-07-05', 2199.0);
+INSERT INTO Instrument VALUES ('111004', 'guitar', 'Sapele', 'Natural', 0);
+INSERT INTO GuitarDetail VALUES ('111004', 'Acoustic', 6, 'Grand Auditorium');
+
+-- Tháng 8
+INSERT INTO Product VALUES ('111005', 'Martin D-28', 'Instrument', 'USA', 'Martin', 4, '2025-08-10', 3199.0);
+INSERT INTO Instrument VALUES ('111005', 'guitar', 'Rosewood', 'Natural', 0);
+INSERT INTO GuitarDetail VALUES ('111005', 'Acoustic', 6, 'Dreadnought');
+
+
+-- --- PIANOS (112xxx) ---
+-- Tháng 2
+INSERT INTO Product VALUES ('112001', 'Yamaha U1 Upright', 'Instrument', 'Japan', 'Yamaha', 3, '2025-02-10', 5000.0);
+INSERT INTO Instrument VALUES ('112001', 'piano', 'Spruce', 'Polished Ebony', 0);
+INSERT INTO PianoDetail VALUES ('112001', 'Upright', 88, 1);
+
+-- Tháng 9
+INSERT INTO Product VALUES ('112002', 'Kawai K-300', 'Instrument', 'Japan', 'Kawai', 5, '2025-09-01', 6500.0);
+INSERT INTO Instrument VALUES ('112002', 'piano', 'Mahogany', 'Black', 0);
+INSERT INTO PianoDetail VALUES ('112002', 'Upright', 88, 1);
+
+-- Tháng 10 (Hàng khủng để Chart doanh thu cao vút)
+INSERT INTO Product VALUES ('112003', 'Steinway Model D', 'Instrument', 'Germany', 'Steinway', 1, '2025-10-15', 150000.0);
+INSERT INTO Instrument VALUES ('112003', 'piano', 'Maple', 'Black', 0);
+INSERT INTO PianoDetail VALUES ('112003', 'Grand', 88, 1);
+
+-- Tháng 10
+INSERT INTO Product VALUES ('112004', 'Roland HP704', 'Instrument', 'Malaysia', 'Roland', 10, '2025-10-20', 2500.0);
+INSERT INTO Instrument VALUES ('112004', 'piano', 'Wood/Plastic', 'Dark Rosewood', 1);
+INSERT INTO PianoDetail VALUES ('112004', 'Digital Upright', 88, 1);
+
+
+-- --- KEYBOARDS (113xxx) ---
+-- Tháng 3
+INSERT INTO Product VALUES ('113001', 'Roland XPS-30', 'Instrument', 'Japan', 'Roland', 15, '2025-03-20', 900.0);
+INSERT INTO Instrument VALUES ('113001', 'keyboard', 'Plastic', 'Black', 1);
+INSERT INTO KeyboardDetail VALUES ('113001', 'Synth', 61, 1);
+
+-- Tháng 11
+INSERT INTO Product VALUES ('113002', 'Nord Stage 3', 'Instrument', 'Sweden', 'Nord', 6, '2025-11-05', 4500.0);
+INSERT INTO Instrument VALUES ('113002', 'keyboard', 'Metal', 'Red', 1);
+INSERT INTO KeyboardDetail VALUES ('113002', 'Stage Piano', 88, 1);
+
+-- Tháng 11
+INSERT INTO Product VALUES ('113003', 'Korg Kronos 2', 'Instrument', 'Japan', 'Korg', 5, '2025-11-12', 3300.0);
+INSERT INTO Instrument VALUES ('113003', 'keyboard', 'Metal', 'Black', 1);
+INSERT INTO KeyboardDetail VALUES ('113003', 'Workstation', 73, 1);
+
+-- Tháng 3
+INSERT INTO Product VALUES ('113004', 'Yamaha PSR-SX900', 'Instrument', 'Indonesia', 'Yamaha', 20, '2025-03-25', 1400.0);
+INSERT INTO Instrument VALUES ('113004', 'keyboard', 'Plastic', 'Black', 1);
+INSERT INTO KeyboardDetail VALUES ('113004', 'Arranger', 61, 1);
+
+
+-- --- DRUMS (114xxx) ---
+-- Tháng 3
+INSERT INTO Product VALUES ('114001', 'Pearl Roadshow', 'Instrument', 'China', 'Pearl', 8, '2025-03-05', 650.0);
+INSERT INTO Instrument VALUES ('114001', 'drumkit', 'Poplar', 'Wine Red', 0);
+INSERT INTO DrumKitDetail VALUES ('114001', 5, 2, 'Mylar', 'Poplar');
+
+-- Tháng 12
+INSERT INTO Product VALUES ('114002', 'Tama Starclassic', 'Instrument', 'Japan', 'Tama', 4, '2025-12-01', 2800.0);
+INSERT INTO Instrument VALUES ('114002', 'drumkit', 'Walnut/Birch', 'Molten Blue', 0);
+INSERT INTO DrumKitDetail VALUES ('114002', 5, 0, 'Evans', 'Walnut');
+
+-- Tháng 12
+INSERT INTO Product VALUES ('114003', 'Roland TD-27KV', 'Instrument', 'Malaysia', 'Roland', 6, '2025-12-15', 3000.0);
+INSERT INTO Instrument VALUES ('114003', 'drumkit', 'Mesh/Rubber', 'Black', 1);
+INSERT INTO DrumKitDetail VALUES ('114003', 5, 3, 'Mesh', 'Plastic');
+
+
+-- --- ACCESSORIES (115xxx) - Rải rác quanh năm để bán kèm ---
+-- Tháng 1
+INSERT INTO Product VALUES ('115001', 'Ernie Ball Strings', 'Accessory', 'USA', 'Ernie Ball', 200, '2025-01-20', 10.0);
+INSERT INTO AccessoryDetail VALUES ('115001', 'Strings', 'Nickel', 'Silver', 'Electric Guitar');
+
+-- Tháng 5
+INSERT INTO Product VALUES ('115002', 'Hercules Guitar Stand', 'Accessory', 'China', 'Hercules', 100, '2025-05-05', 25.0);
+INSERT INTO AccessoryDetail VALUES ('115002', 'Stand', 'Metal', 'Black', 'Guitar/Bass');
+
+-- Tháng 2
+INSERT INTO Product VALUES ('115003', 'Mogami Gold Cable', 'Accessory', 'Japan', 'Mogami', 50, '2025-02-15', 50.0);
+INSERT INTO AccessoryDetail VALUES ('115003', 'Cable', 'Copper', 'Black', 'Instruments');
+
+-- Tháng 4
+INSERT INTO Product VALUES ('115004', 'Vic Firth 5A', 'Accessory', 'USA', 'Vic Firth', 150, '2025-04-10', 12.0);
+INSERT INTO AccessoryDetail VALUES ('115004', 'Drumsticks', 'Hickory', 'Wood', 'Drums');
+
+-- Tháng 7
+INSERT INTO Product VALUES ('115005', 'Boss DS-1 Distortion', 'Accessory', 'Taiwan', 'Boss', 30, '2025-07-20', 60.0);
+INSERT INTO AccessoryDetail VALUES ('115005', 'Pedal', 'Metal', 'Orange', 'Electric Guitar');
+
+-- Tháng 8
+INSERT INTO Product VALUES ('115006', 'Marshall DSL40CR', 'Accessory', 'Vietnam', 'Marshall', 10, '2025-08-10', 750.0);
+INSERT INTO AccessoryDetail VALUES ('115006', 'Amplifier', 'Tolex', 'Black', 'Electric Guitar');
