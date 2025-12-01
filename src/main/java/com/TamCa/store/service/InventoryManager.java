@@ -19,16 +19,18 @@ public class InventoryManager {
     private final ProductDAO productDAO;
     private final AccountDAO accountDAO;
 
-    private final CustomerManager customerManager; // MỚI
-    private final EmployeeManager employeeManager; // MỚI
+    private final CustomerManager customerManager; 
+    private final EmployeeManager employeeManager; 
+    private final OrderDAO orderDAO;
 
     public InventoryManager(){
         // Initialize DAOs
         this.productDAO = new ProductDAO();
         this.accountDAO = new AccountDAO();
+        this.orderDAO = new OrderDAO();
 
-        this.customerManager = new CustomerManager(); // KHỞI TẠO MỚI
-        this.employeeManager = new EmployeeManager(); // KHỞI TẠO MỚI
+        this.customerManager = new CustomerManager(); 
+        this.employeeManager = new EmployeeManager(); 
     }
 
     /**
@@ -259,7 +261,7 @@ public class InventoryManager {
         return customerManager.addNewCustomer(newCus);
     }
 
-    // --- EMPLOYEE DELEGATION ---
+    // EMPLOYEE delegation
     public List<Employee> getAllEmployees() {
         return employeeManager.getAllEmployees();
     }
@@ -281,5 +283,10 @@ public class InventoryManager {
             total += e.getSalEmp();
         }
         return total;
+    }
+
+    // ORDER Delegation
+    public boolean createOrder(Order order) {
+        return orderDAO.createOrder(order);
     }
 }

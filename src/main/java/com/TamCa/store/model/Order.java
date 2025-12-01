@@ -1,27 +1,23 @@
 package com.TamCa.store.model;
-import com.TamCa.store.model.OrderPersonnelData;
-import com.TamCa.store.model.OrderDetail;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Date;
 
-
-
-// --- CLASS ORDER ---
+// --- CLASS ORDER (Main) ---
 public class Order implements OrderPersonnelData {
     
     private int orderId;
-    private String status, deliAdd;
-    private Date sellDate, deliDate;
+    private String status;
+    private String deliAdd;
+    private Date sellDate;
+    private Date deliDate;
 
     private Customer customer;
-    private List<OrderDetail> items;
+    private List<OrderDetail> items; // Danh sách hàng
 
-    // Constructor rút gọn (Bỏ tham số Employee)
-    public Order(String status, String deliAdd, Date sellDate, Date deliDate, 
-                 Customer customer) {
+    // Constructor
+    public Order(String status, String deliAdd, Date sellDate, Date deliDate, Customer customer) {
         this.status = status;
         this.deliAdd = deliAdd;
         this.sellDate = sellDate;
@@ -30,22 +26,11 @@ public class Order implements OrderPersonnelData {
         this.items = new ArrayList<>(); 
     }
     
-    // Constructor đầy đủ (Bỏ Employee)
-    public Order(int orderId, String status, String deliAdd, Date sellDate, Date deliDate, 
-                 Customer customer) {
-        this(status, deliAdd, sellDate, deliDate, customer);
-        this.orderId = orderId;
-    }
+    // Setters & Getters Order
+    public void setOrderId(int orderId) { this.orderId = orderId; }
+    public int getOrderId() { return orderId; }
 
-    public void addProduct(Product product, int quantity){
-        OrderDetail item = new OrderDetail(product, quantity);
-        this.items.add(item);
-    }
-
-    public void setItems(List<OrderDetail> items) {
-        this.items = items;
-    }
-
+    public void setItems(List<OrderDetail> items) { this.items = items; }
     public List<OrderDetail> getItems() { return this.items; }
 
     public double getTotalAmount() {
@@ -56,35 +41,56 @@ public class Order implements OrderPersonnelData {
         return total;
     }
 
-
-
+    // --- Interface Impl ---
     @Override
-    public String getCustomerCSN() { return (customer != null) ? customer.getCSN() : "N/A"; }
-
+    public String getCustomerCSN() { return (customer != null) ? customer.getCSN() : null; }
     @Override
-    public String getEmployeeEID() { 
-        return "N/A";
-    }
-        
-    // --- GETTERS & SETTERS ---
-    public int getOrderId() { return orderId; }
-    public void setOrderId(int orderId) { this.orderId = orderId; }
-    
-    final public String getStatus(){ return this.status; }
-    final public String getDeliAdd(){ return this.deliAdd; }
-    final public Date getSellDate(){ return this.sellDate; }
-    final public Date getDeliDate(){ return this.deliDate; }
-    
-    public void setStatus(String status){ this.status = status; }
-    public void setDeliAdd(String deliAdd){ this.deliAdd = deliAdd; }
-    public void setSellDate(Date sellDate){ this.sellDate = sellDate; }
-    public void setDeliDate(Date deliDate){ this.deliDate = deliDate; }
+    public String getEmployeeEID() { return "N/A"; }
 
-    final public Customer getCustomer() { return this.customer; }
-    
-    public String getDescription(){
-        return "Order ID: " + getOrderId() +
-               "\nStatus: " + getStatus() + 
-               "\nTotal: $" + getTotalAmount();
+    // Getters Fields
+    public String getStatus() { return status; }
+    public String getDeliAdd() { return deliAdd; }
+    public Date getSellDate() { return sellDate; }
+    public Date getDeliDate() { return deliDate; }
+    public Customer getCustomer() { return customer; }
+
+
+    // ========================================================
+    // --- INNER CLASS: ORDER DETAIL (Nằm gọn trong Order) ---
+    // ========================================================
+    public static class OrderDetail {
+        private int orderDetailId; 
+        private int orderId;
+        private Product product;
+        private int quantity;
+        private double priceAtSale;
+
+        public OrderDetail(Product product, int quantity) {
+            this.product = product;
+            this.quantity = quantity;
+            this.priceAtSale = product.getSellingPrice();
+        }
+
+        public double getTotalPrice() {
+            return this.quantity * this.priceAtSale;
+        }
+
+        // Getters & Setters Detail
+        public Product getProduct() { return product; }
+        public void setProduct(Product product) { this.product = product; }
+        public int getQuantity() { return quantity; }
+        public void setQuantity(int quantity) { this.quantity = quantity; }
+        public double getPriceAtSale() { return priceAtSale; }
+        public void setPriceAtSale(double priceAtSale) { this.priceAtSale = priceAtSale; }
+        public int getOrderDetailId() { return orderDetailId; }
+        public void setOrderDetailId(int orderDetailId) { this.orderDetailId = orderDetailId; }
+        public int getOrderId() { return orderId; }
+        public void setOrderId(int orderId) { this.orderId = orderId; }
     }
+}
+
+// --- INTERFACE (Nằm chung file, không public) ---
+interface OrderPersonnelData {
+    String getCustomerCSN();
+    String getEmployeeEID();
 }

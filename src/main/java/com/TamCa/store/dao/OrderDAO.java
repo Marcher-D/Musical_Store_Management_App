@@ -1,7 +1,6 @@
 package com.TamCa.store.dao;
 
 import com.TamCa.store.model.Order;
-import com.TamCa.store.model.OrderDetail;
 import java.sql.*;
 
 public class OrderDAO {
@@ -49,7 +48,7 @@ public class OrderDAO {
             }
 
             // 3. Insert Detail và Trừ kho
-            for (OrderDetail item : order.getItems()) {
+            for (Order.OrderDetail item : order.getItems()) {
                 // A. Insert Detail
                 pstmtDetail = conn.prepareStatement(sqlDetail);
                 pstmtDetail.setInt(1, orderId);

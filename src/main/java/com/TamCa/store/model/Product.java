@@ -86,4 +86,9 @@ public abstract class Product {
     }
 
     public abstract String getDescription();
+
+    @Override
+    public String toString() {
+        return namePro + " [" + id + "] - $" + sellingPrice;
+    }
 }
