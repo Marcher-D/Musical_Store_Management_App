@@ -18,8 +18,8 @@ com\TamCa\store\service\CustomerManager.class
 com\TamCa\store\dao\CustomerDAO.class
 com\TamCa\store\model\DrumKit.class
 com\TamCa\store\dao\EmployeeDAO.class
+com\TamCa\store\dao\DBConnection.class
 com\TamCa\store\model\Product.class
 com\TamCa\store\App.class
-com\TamCa\store\main\MainApplication.class
 com\TamCa\store\model\Instrument.class
 com\TamCa\store\dao\ProductDAO.class

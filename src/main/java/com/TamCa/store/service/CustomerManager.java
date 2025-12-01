@@ -69,5 +69,8 @@ public class CustomerManager {
         return customerDAO.deleteCustomer(CSN);
     }
     
-    // Thêm các hàm nghiệp vụ khác (ví dụ: tìm kiếm, thống kê khách hàng thân thiết) nếu cần
+    public boolean addNewCustomer(String csn, String name, String phone, String email, String address) {
+        Customer newCus = new Customer(name, csn, phone, email, address);
+        return this.addNewCustomer(newCus);
+    }
 }

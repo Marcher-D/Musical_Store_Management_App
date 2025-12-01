@@ -2,7 +2,7 @@ package com.TamCa.store.controller;
 
 import com.TamCa.store.model.*;
 import com.TamCa.store.model.Order.OrderDetail;
-import com.TamCa.store.service.InventoryManager; 
+import com.TamCa.store.service.*; 
 import com.TamCa.store.dao.*;
 
 import javafx.fxml.FXML;
@@ -46,6 +46,8 @@ public class DashboardController implements Initializable {
     
     // --- Services and Data ---
     private final InventoryManager inventoryManager = new InventoryManager(); 
+    private final CustomerManager customerManager = new CustomerManager(); 
+    private final EmployeeManager employeeManager = new EmployeeManager(); 
     private ObservableList<Product> productList;
     private ObservableList<Customer> customerList; 
     private ObservableList<Employee> employeeList; 
@@ -244,14 +246,14 @@ public class DashboardController implements Initializable {
 
     // Tải dữ liệu Customer (MỚI - Dùng DB)
     private void loadCustomerData() {
-        List<Customer> customers = inventoryManager.getAllCustomers();
+        List<Customer> customers = customerManager.getAllCustomers();
         customerList = FXCollections.observableArrayList(customers);
         System.out.println("Customer Data loaded. Count: " + customerList.size());
     }
     
     // Tải dữ liệu Employee (MỚI - Dùng DB)
     private void loadEmployeeData() {
-        List<Employee> employees = inventoryManager.getAllEmployees();
+        List<Employee> employees = employeeManager.getAllEmployees();
         employeeList = FXCollections.observableArrayList(employees);
         System.out.println("Employee Data loaded. Count: " + employeeList.size());
     }
@@ -842,7 +844,7 @@ public class DashboardController implements Initializable {
         addCustomerView.toFront();
         
         // Gọi InventoryManager tính ID tiếp theo
-        String nextID = inventoryManager.generateNextCustomerId(); 
+        String nextID = customerManager.generateNextCustomerId(); 
         
         if (txtCusCSNForm != null) {
             txtCusCSNForm.setText(nextID); 
@@ -871,7 +873,7 @@ public class DashboardController implements Initializable {
             return; 
         }
 
-        boolean success = inventoryManager.addNewCustomer(
+        boolean success = customerManager.addNewCustomer(
             txtCusCSNForm.getText().trim(),
             txtCusNameForm.getText().trim(),
             txtCusPhoneForm.getText().trim(),
@@ -899,7 +901,7 @@ public class DashboardController implements Initializable {
         addEmployeeView.toFront();
         
         // Tự động sinh ID (E001, E002...)
-        String nextID = inventoryManager.generateNextEmployeeId();
+        String nextID = employeeManager.generateNextEmployeeId();
 
         if (txtEmpIDForm != null) {
             txtEmpIDForm.setText(nextID);
@@ -946,7 +948,7 @@ public class DashboardController implements Initializable {
             Date hireDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
             // Gọi Manager để lưu
-            boolean success = inventoryManager.addNewEmployee(eid, name, txtEmpPosForm.getText().trim(), salary, hireDate);
+            boolean success = employeeManager.addNewEmployee(eid, name, txtEmpPosForm.getText().trim(), salary, hireDate);
 
             if (success) {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Employee " + eid + " added successfully!");

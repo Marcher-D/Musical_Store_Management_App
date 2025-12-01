@@ -1,6 +1,8 @@
 package com.TamCa.store.service;
 
 import com.TamCa.store.dao.EmployeeDAO;
+import com.TamCa.store.model.Customer;
+import java.util.Date;
 import com.TamCa.store.model.Employee;
 import java.util.List;
 
@@ -70,6 +72,18 @@ public class EmployeeManager {
     public boolean deleteEmployee(String EID) {
         return employeeDAO.deleteEmployee(EID);
     }
-    
-    // Thêm các hàm nghiệp vụ khác (ví dụ: tìm kiếm, thống kê hiệu suất) nếu cần
-}
+
+    public boolean addNewEmployee(String eid, String name, String pos, int salary, Date hireDate) {
+        Employee newEmp = new Employee(name, eid, pos, salary, hireDate);
+        return this.addNewEmployee(newEmp);
+    }
+
+    public int getTotalSalary(){
+        List<Employee> list = getAllEmployees();
+        int total = 0;
+        for (Employee e : list){
+            total += e.getSalEmp();
+        }
+        return total;
+    }
+} 
