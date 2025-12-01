@@ -246,45 +246,6 @@ public class InventoryManager {
         return productDAO.getMonthlyImportStats();
     }
 
-    // --- CUSTOMER DELEGATION ---
-    public List<Customer> getAllCustomers() {
-        return customerManager.getAllCustomers();
-    }
-
-    // Hàm này được Controller gọi để lấy ID tự động điền vào Form
-    public String generateNextCustomerId() {
-        return customerManager.generateNextCustomerId();
-    }
-
-    public boolean addNewCustomer(String csn, String name, String phone, String email, String address) {
-        Customer newCus = new Customer(name, csn, phone, email, address);
-        return customerManager.addNewCustomer(newCus);
-    }
-
-    // EMPLOYEE delegation
-    public List<Employee> getAllEmployees() {
-        return employeeManager.getAllEmployees();
-    }
-
-    // Hàm này được Controller gọi
-    public String generateNextEmployeeId() {
-        return employeeManager.generateNextEmployeeId();
-    }
-
-    public boolean addNewEmployee(String eid, String name, String pos, int salary, Date hireDate) {
-        Employee newEmp = new Employee(name, eid, pos, salary, hireDate);
-        return employeeManager.addNewEmployee(newEmp);
-    }
-    
-    public int getTotalSalary(){
-        List<Employee> list = getAllEmployees();
-        int total = 0;
-        for (Employee e : list){
-            total += e.getSalEmp();
-        }
-        return total;
-    }
-
     // ORDER Delegation
     public boolean createOrder(Order order) {
         return orderDAO.createOrder(order);

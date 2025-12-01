@@ -5,23 +5,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.sql.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * ProductDAO: Class responsible for direct communication with the Database 
- * (CRUD, raw data conversion to Product objects, and ID counter management).
- * NOTE: Schema creation logic (setupDatabase, createTables) has been removed, 
- * relying on an external SQL script to initialize the database structure.
+ * ProductDAO: Class giao tiếp với Database cho sản phẩm.
+ * Đã Refactor để dùng DBConnection.
  */
 public class ProductDAO {
 
-    // --- DATABASE CONFIGURATION ---
-    private static final String BASE_DB_URL = "jdbc:mysql://localhost:3306"; 
-    private static final String CONNECTION_PARAMS = "?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC"; 
-    private static final String DB_USER = "root";       
-    private static final String DB_PASSWORD = "passcode"; 
-    private static final String DATABASE_NAME = "musical_store_db";
-    
     // Table names
     private static final String PRODUCT_TABLE = "Product";
     private static final String INSTRUMENT_TABLE = "Instrument"; 
@@ -44,7 +34,7 @@ public class ProductDAO {
     private static final String DRUM_PREFIX = "114";
     private static final String ACCESSORY_PREFIX = "115"; 
     
-    // Common SQL JOIN command (for getAllItems and findItem)
+    // Common SQL JOIN command
     private static final String BASE_JOIN_SQL = String.format(
         "SELECT p.*, " +
         "i.mateIns AS i_mateIns, i.colorIns AS i_colorIns, i.isElectric AS i_isElectric, LOWER(TRIM(i.cateIns)) AS i_cateIns_clean, i.cateIns AS i_cateIns_raw, " + 
@@ -64,42 +54,39 @@ public class ProductDAO {
         KEYBOARD_DETAIL_TABLE, DRUMKIT_DETAIL_TABLE, ACCESSORY_DETAIL_TABLE);
 
     public ProductDAO(){
-        // Only initialize ID counters, assuming the DB structure already exists
         initializeIdCounters();
     }
     
     // --- DATABASE CONNECTION METHOD ---
-    // useDb=true is mandatory now as setup logic is external
     public Connection getConnection(boolean useDb) throws SQLException {
-        String url = BASE_DB_URL + "/" + DATABASE_NAME + CONNECTION_PARAMS;
-        
-        try {
-            return DriverManager.getConnection(url, DB_USER, DB_PASSWORD);
-        } catch (SQLException e) {
-            System.err.println("Database CONNECTION FAILED: " + e.getMessage());
-            throw e; 
-        }
+        // Tham số useDb hiện tại không còn cần thiết vì ta luôn kết nối vào DB chính
+        // Giữ lại tham số để tránh lỗi compile ở các đoạn code cũ gọi hàm này
+        return DBConnection.getConnection();
     }
     
     // --- ID COUNTER INITIALIZATION ---
-    // (This method remains essential to maintain ID continuity across restarts)
     private void initializeIdCounters() {
         String sql = "SELECT MAX(id) FROM " + PRODUCT_TABLE + " WHERE id LIKE ?";
         
         try (Connection conn = getConnection(true);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
+            // Helper interface for functional programming style in loop
             java.util.function.BiConsumer<String, java.util.function.IntConsumer> getMaxCounter = (prefix, setter) -> {
                 try {
                     pstmt.setString(1, prefix + "%");
                     try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next() && rs.getString(1) != null) {
                             String maxId = rs.getString(1);
-                            int maxCount = Integer.parseInt(maxId.substring(3)) + 1;
-                            setter.accept(maxCount);
+                            try {
+                                int maxCount = Integer.parseInt(maxId.substring(3)) + 1;
+                                setter.accept(maxCount);
+                            } catch (NumberFormatException | StringIndexOutOfBoundsException ex) {
+                                // Ignore bad ID formats
+                            }
                         }
                     }
-                } catch (SQLException | NumberFormatException | StringIndexOutOfBoundsException e) {
+                } catch (SQLException e) {
                      System.err.println("Error initializing counter for prefix " + prefix + ": " + e.getMessage());
                 }
             };
@@ -250,10 +237,8 @@ public class ProductDAO {
         }
     }
 
-
     // --- HELPER METHOD: BUILD PRODUCT OBJECT FROM RESULTSET ---
     private Product buildProductFromResultSet(ResultSet rs) throws SQLException {
-        // Read general Product information
         String id = rs.getString("id");
         String namePro = rs.getString("namePro");
         String catePro = rs.getString("catePro");
@@ -265,7 +250,6 @@ public class ProductDAO {
         java.util.Date utilImportDate = (importDate != null) ? new java.util.Date(importDate.getTime()) : null;
 
         if ("Instrument".equals(catePro)) {
-            // Read general Instrument information
             String mateIns = rs.getString("i_mateIns");
             String colorIns = rs.getString("i_colorIns");
             boolean isElectric = rs.getBoolean("i_isElectric");
@@ -274,7 +258,6 @@ public class ProductDAO {
             
             if (mateIns == null) return null; 
             
-            // Recreate subclass Instrument object
             switch (normalizedCateIns) {
                 case "guitar":
                     return new Guitar(
@@ -304,7 +287,6 @@ public class ProductDAO {
                     return null; 
             }
         } else if ("Accessory".equals(catePro)) {
-            // Recreate Accessory object
             String cateAcc = rs.getString("cateAcc");
             if (cateAcc == null) return null;
             
