@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-// --- CLASS ORDER (Main) ---
 public class Order implements OrderPersonnelData {
     
     private int orderId;
@@ -54,10 +53,7 @@ public class Order implements OrderPersonnelData {
     public Date getDeliDate() { return deliDate; }
     public Customer getCustomer() { return customer; }
 
-
-    // ========================================================
     // --- INNER CLASS: ORDER DETAIL (Nằm gọn trong Order) ---
-    // ========================================================
     public static class OrderDetail {
         private int orderDetailId; 
         private int orderId;
@@ -89,7 +85,7 @@ public class Order implements OrderPersonnelData {
     }
 }
 
-// --- INTERFACE (Nằm chung file, không public) ---
+// interface 
 interface OrderPersonnelData {
     String getCustomerCSN();
     String getEmployeeEID();

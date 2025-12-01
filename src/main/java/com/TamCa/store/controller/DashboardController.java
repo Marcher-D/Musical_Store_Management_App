@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Rotate;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -44,13 +45,11 @@ import java.util.Optional;
 public class DashboardController implements Initializable {
     
     // --- Services and Data ---
-    // Khai báo final để đảm bảo khởi tạo ngay từ đầu
     private final InventoryManager inventoryManager = new InventoryManager(); 
     private ObservableList<Product> productList;
     private ObservableList<Customer> customerList; 
     private ObservableList<Employee> employeeList; 
 
-    // --- FXML UI Elements ---
     // --- SIDEBAR ---
     @FXML private VBox sidebar;
     @FXML private Button btnMenu;
@@ -150,7 +149,7 @@ public class DashboardController implements Initializable {
 
     // --- ORDER VIEW VARIABLES ---
     @FXML private AnchorPane orderView;
-    @FXML private Button btnOrders; // Nhớ đặt fx:id cho nút Order bên Sidebar nha
+    @FXML private Button btnOrders; 
 
     // Left Side
     @FXML private TextField txtCustomerSearch; 
@@ -229,6 +228,8 @@ public class DashboardController implements Initializable {
         setupOrderTable();
         setupOrderLogic();
 
+        System.out.println("DEBUG CHECK: orderView is " + orderView);
+
         showHome();
     }
     
@@ -259,7 +260,7 @@ public class DashboardController implements Initializable {
     // ==================== LOGIC TABLE SETUP & STATS ====================
 
     private void setupProductTable() {
-        // Cột Product (Sử dụng fx:id đã có: colId, colName, colBrand, ...)
+        
         colId.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getId()));
         colName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNamePro()));
         colBrand.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getBrand()));        
@@ -321,14 +322,14 @@ public class DashboardController implements Initializable {
         }
     }
 
-    // --- CẬP NHẬT THỐNG KÊ HOME VIEW ---
+    // CẬP NHẬT THỐNG KÊ HOME VIEW 
     private void updateHomeStats() {
-        // 1. Lấy dữ liệu
+        // Lấy dữ liệu
         int totalProducts = inventoryManager.getExistingProductCount();
         double totalRevenue = inventoryManager.totalValue();
         int totalCustomers = customerList != null ? customerList.size() : 0; 
         
-        // 2. Cập nhật UI (Sử dụng đúng fx:id GỐC trong FXML: lblTotalProductsCount, lblTotalCustomersCount, lblTotalRevenueValue)
+        // Cập nhật UI 
         
         if (lblTotalProductsCount != null) {
             lblTotalProductsCount.setText(String.valueOf(totalProducts));
@@ -360,24 +361,23 @@ public class DashboardController implements Initializable {
         btnProducts.getStyleClass().remove("active");
         if(btnCustomers != null) btnCustomers.getStyleClass().remove("active");
         if(btnEmployees != null) btnEmployees.getStyleClass().remove("active");
+        if(btnOrders != null) btnOrders.getStyleClass().remove("active");
+        if(btnOrders != null) btnOrders.getStyleClass().remove("active");
     }
 
     @FXML private void showHome() {
         homeView.setVisible(true); homeView.toFront();
         productView.setVisible(false); customerView.setVisible(false); employeeView.setVisible(false); addProductView.setVisible(false);
-        
+        if(orderView != null) orderView.setVisible(false);
+
         updateHomeStats();
-        
         resetButtonStyles(); btnHome.getStyleClass().add("active");
+        if(btnHome != null) btnHome.getStyleClass().add("active");
     }
 
     @FXML private void showProducts() {
 
         loadProductData();
-        // Cần cập nhật lại items cho table sau khi load, để search/sort hoạt động đúng
-        // SortedList<Product> sortedData = new SortedList<>(new FilteredList<>(productList, p -> true));
-        // sortedData.comparatorProperty().bind(productTable.comparatorProperty());
-        // productTable.setItems(sortedData);
         
         homeView.setVisible(false); 
         productView.setVisible(true); 
@@ -385,24 +385,27 @@ public class DashboardController implements Initializable {
         customerView.setVisible(false); 
         employeeView.setVisible(false); 
         addProductView.setVisible(false);
+        if(orderView != null) orderView.setVisible(false);
         resetButtonStyles(); btnProducts.getStyleClass().add("active");
     }
 
     @FXML private void showCustomers() {
-        loadCustomerData(); // Load data mới nhất
-        setupCustomerTable(); // Update TableView và Stats
+        loadCustomerData(); 
+        setupCustomerTable(); 
         
         homeView.setVisible(false); productView.setVisible(false); employeeView.setVisible(false); addProductView.setVisible(false);
         customerView.setVisible(true); customerView.toFront();
+        if(orderView != null) orderView.setVisible(false);
         resetButtonStyles(); if(btnCustomers != null) btnCustomers.getStyleClass().add("active");
     }
 
     @FXML private void showEmployees() {
-        loadEmployeeData(); // Load data mới nhất
-        setupEmployeeTable(); // Update TableView và Stats
+        loadEmployeeData(); 
+        setupEmployeeTable(); 
         
         homeView.setVisible(false); productView.setVisible(false); customerView.setVisible(false); addProductView.setVisible(false);
         employeeView.setVisible(true); employeeView.toFront();
+        if(orderView != null) orderView.setVisible(false);
         resetButtonStyles(); if(btnEmployees != null) btnEmployees.getStyleClass().add("active");
     }
 
@@ -434,7 +437,7 @@ public class DashboardController implements Initializable {
         setAllDetailFormsVisible(false);
     }
 
-    // --- LOGIC FORM (Giữ nguyên) ---
+    // --- LOGIC FORM ---
 
     private void setupFormLogic() {
         if (cbCatePro != null) {
@@ -517,7 +520,7 @@ public class DashboardController implements Initializable {
             LocalDate localDate = dpImportDate.getValue();
             Date importDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-            // --- B. SAVE PRODUCT BASED ON CATEGORY ---
+            // SAVE PRODUCT by CATEGORY 
             if ("Instrument".equals(catePro)) {
                 String mateIns = txtMateIns.getText().trim();
                 String colorIns = txtColorIns.getText().trim();
@@ -573,7 +576,7 @@ public class DashboardController implements Initializable {
             // Khi lưu thành công thì nó sẽ làm những việc này
             System.out.println("✅ Saved to DB: " + name);
             showAlert(Alert.AlertType.INFORMATION, "Success", "Product '" + name + "' added successfully!");
-            loadProductData(); // Cập nhật bảng Product
+            loadProductData(); 
             handleCancelAdd();
             updateHomeStats();
             
@@ -615,10 +618,11 @@ public class DashboardController implements Initializable {
     }
 
     private void setupChart(String type) {
-        if (revenueChart == null) return; // Dùng revenueChart (FX:ID GỐC)
+
+        if (revenueChart == null) return; 
 
         revenueChart.getData().clear();
-        revenueChart.setAnimated(false);
+        revenueChart.setAnimated(true);
         
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName(type);
@@ -674,9 +678,9 @@ public class DashboardController implements Initializable {
         
         // Thêm dữ liệu giả (Fake Data)
         pnBestSellers.getChildren().add(createBestSellerCard("Fender Stratocaster", "1,500", "guitar.png"));
-        pnBestSellers.getChildren().add(createBestSellerCard("Yamaha Grand Piano", "12,000", "piano.png"));
+        pnBestSellers.getChildren().add(createBestSellerCard("Nord Stage 4 Piano", "12,000", "piano.png"));
         pnBestSellers.getChildren().add(createBestSellerCard("Pearl Export Drums", "950", "drum.png"));
-        pnBestSellers.getChildren().add(createBestSellerCard("Roland XPS-10", "600", "keyboard.png"));
+        pnBestSellers.getChildren().add(createBestSellerCard("Roland XPS-10 Synthesizer", "600", "keyboard.png"));
     }
 
     private HBox createBestSellerCard(String productName, String price, String imagePath) {
@@ -691,16 +695,15 @@ public class DashboardController implements Initializable {
         ImageView imageView = new ImageView();
         try {
             String path = getClass().getResource("/images/" + imagePath).toExternalForm();
-            imageView.setImage(new Image(path));
-        } catch (Exception e) { 
-            System.err.println("Không tìm thấy ảnh: " + imagePath);
-        }
-        
-        imageView.setFitWidth(70); 
-        imageView.setFitHeight(70);
-        imageView.setPreserveRatio(true);
+            imageView.setImage(new javafx.scene.image.Image(path));
+            
+            imageView.setFitWidth(70); 
+            imageView.setFitHeight(70);
+            imageView.setPreserveRatio(true);
+        } catch (NullPointerException e){
+            System.err.println("ERROR: Resource not found or path is NULL for: " + imagePath);
+        } 
 
-        // Hiệu ứng xoay 3D
         RotateTransition rotate = new RotateTransition(Duration.seconds(2), imageView);
         rotate.setAxis(Rotate.Y_AXIS); 
         rotate.setByAngle(360);
@@ -960,33 +963,29 @@ public class DashboardController implements Initializable {
     }
 
     private void setupOrderTable() {
-        // Cột 1: Tên sản phẩm
+
         TableColumn<Order.OrderDetail, String> colName = new TableColumn<>("Product");
         colName.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getProduct().getNamePro()));
         
-        // Cột 2: Số lượng (Quantity)
         TableColumn<Order.OrderDetail, Integer> colQty = new TableColumn<>("Qty");
         colQty.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getQuantity()));
         
-        // Cột 3: Giá bán
         TableColumn<Order.OrderDetail, Double> colPrice = new TableColumn<>("Price");
         colPrice.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getPriceAtSale()));
         
-        // Cột 4: Thành tiền (Qty * Price)
         TableColumn<Order.OrderDetail, Double> colTotal = new TableColumn<>("Total");
         colTotal.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getTotalPrice()));
 
-        // Cột 5: Nút Xóa (Action)
         TableColumn<Order.OrderDetail, Void> colAction = new TableColumn<>("Action");
         colAction.setCellFactory(param -> new TableCell<>() {
             private final Button btnDel = new Button("X");
             {
                 btnDel.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
                 btnDel.setOnAction(e -> {
-                    // Logic xóa khỏi giỏ
+                    
                     Order.OrderDetail item = getTableView().getItems().get(getIndex());
                     cartItems.remove(item);
-                    calculateOrderTotal(); // Tính lại tổng tiền
+                    calculateOrderTotal(); 
                 });
             }
             @Override
@@ -997,15 +996,14 @@ public class DashboardController implements Initializable {
         });
 
         orderTable.getColumns().setAll(colName, colQty, colPrice, colTotal, colAction);
-        orderTable.setItems(cartItems); // Gắn list giỏ hàng vào bảng
+        orderTable.setItems(cartItems); 
     }
 
     private void setupOrderLogic() {
-        // 1. Mặc định ngày bán là hôm nay
+    
         if (dpSellDate != null) dpSellDate.setValue(LocalDate.now());
         if (dpDeliDate != null) dpDeliDate.setValue(LocalDate.now().plusDays(3)); // Giao sau 3 ngày
 
-        // 2. Logic tìm Customer (Khi gõ vào ô search)
         if (txtCustomerSearch != null) {
             txtCustomerSearch.textProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal == null || newVal.trim().isEmpty()) {
@@ -1015,19 +1013,18 @@ public class DashboardController implements Initializable {
                     return;
                 }
                 
-                // Tìm trong danh sách customerList (đã load từ DB)
+                // Tìm trong danh sách customerList
                 boolean found = false;
                 for (Customer c : customerList) {
-                    // Tìm theo ID hoặc Tên (không phân biệt hoa thường)
+
                     if (c.getCSN().equalsIgnoreCase(newVal.trim()) || c.getNameCus().toLowerCase().contains(newVal.toLowerCase())) {
                         selectedCustomer = c;
                         lblSelectedCustomerName.setText("✅ " + c.getNameCus() + " (" + c.getCSN() + ")");
-                        lblSelectedCustomerName.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;"); // Màu xanh
+                        lblSelectedCustomerName.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;"); 
                         
-                        // Tự điền địa chỉ giao hàng
                         if (txtDeliAddress != null) txtDeliAddress.setText(c.getAddCus());
                         found = true;
-                        break; // Tìm thấy 1 người là dừng
+                        break; 
                     }
                 }
                 if (!found) {
@@ -1066,10 +1063,6 @@ public class DashboardController implements Initializable {
                     dialog.setTitle("Select Product");
                     dialog.setHeaderText("Tìm thấy " + matches.size() + " sản phẩm khớp với '" + query + "'");
                     dialog.setContentText("Vui lòng chọn sản phẩm chính xác:");
-                    
-                    // Sửa hiển thị trong Dropdown (chỉ hiện Tên - Giá - ID)
-                    // (Mặc định nó dùng hàm toString của Product, nếu bro chưa override toString thì nó hiện mã loằng ngoằng)
-                    // Cách nhanh nhất là bro override toString() trong model Product, hoặc để nó hiện mặc định cũng được.
                     
                     Optional<Product> result = dialog.showAndWait();
                     result.ifPresent(selectedProduct -> {
@@ -1122,15 +1115,21 @@ public class DashboardController implements Initializable {
 
     @FXML 
     private void showOrders() {
+        System.out.println(">>> BUTTON CLICKED: Đang cố gắng mở Order View...");
         // Ẩn mấy cái kia
-        homeView.setVisible(false); productView.setVisible(false); 
-        customerView.setVisible(false); employeeView.setVisible(false);
-        addCustomerView.setVisible(false); addEmployeeView.setVisible(false);
+        if(homeView != null) homeView.setVisible(false);
+        if(productView != null) productView.setVisible(false); 
+        if(customerView != null) customerView.setVisible(false); 
+        if(employeeView != null) employeeView.setVisible(false);
+        if(addProductView != null) addProductView.setVisible(false);
+        if(addCustomerView != null) addCustomerView.setVisible(false);
+        if(addEmployeeView != null) addEmployeeView.setVisible(false);
         
         // Hiện Order
-        orderView.setVisible(true); orderView.toFront();
         
-        // Đổi màu nút Sidebar
+        orderView.setVisible(true); 
+        orderView.toFront();
+        
         resetButtonStyles(); 
         if(btnOrders != null) btnOrders.getStyleClass().add("active");
     }

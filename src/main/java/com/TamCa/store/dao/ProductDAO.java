@@ -150,6 +150,7 @@ public class ProductDAO {
     }
     
     // --- BASIC INSERT METHODS ---
+    
     public void insertProduct(Product product) throws SQLException {
         String sql = String.format(
             "INSERT INTO %s (id, namePro, catePro, origin, brand, quantityInStock, importDate, sellingPrice) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", PRODUCT_TABLE);
