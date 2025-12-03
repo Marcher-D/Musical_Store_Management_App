@@ -10,24 +10,22 @@ import java.util.List;
  * EmployeeDAO: Lớp chịu trách nhiệm giao tiếp trực tiếp với bảng Employee trong Database.
  */
 public class EmployeeDAO {
-    
-    // Sử dụng lại logic kết nối từ ProductDAO/AccountDAO
     private Connection getConnection() throws SQLException {
         return new AccountDAO().getConnection();
     }
     
-    // --- MAPPER: Chuyển đổi ResultSet thành đối tượng Employee ---
+    // MAPPER chuyển đổi ResultSet thành đối tượng Employee
     private Employee buildEmployeeFromResultSet(ResultSet rs) throws SQLException {
         String nameEmp = rs.getString("nameEmp");
         String EID = rs.getString("EID");
         String posEmp = rs.getString("posEmp");
         int salEmp = rs.getInt("salEmp");
-        Date hireDate = rs.getDate("hireDate"); // Sử dụng java.sql.Date -> chuyển về java.util.Date
+        Date hireDate = rs.getDate("hireDate");
         
         return new Employee(nameEmp, EID, posEmp, salEmp, hireDate);
     }
     
-    // --- CRUD: CREATE ---
+    // add employee
     public boolean addEmployee(Employee employee) {
         String sql = "INSERT INTO Employee (EID, nameEmp, posEmp, salEmp, hireDate) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
@@ -37,7 +35,7 @@ public class EmployeeDAO {
             pstmt.setString(2, employee.getNameEmp());
             pstmt.setString(3, employee.getPosEmp());
             pstmt.setInt(4, employee.getSalEmp());
-            // Chuyển java.util.Date sang java.sql.Date cho DB
+            // switch the java.util.Date to java.sql.Date
             pstmt.setDate(5, new java.sql.Date(employee.getHireDate().getTime())); 
             
             int affectedRows = pstmt.executeUpdate();
@@ -49,7 +47,7 @@ public class EmployeeDAO {
         }
     }
     
-    // --- CRUD: READ ALL ---
+    // list all employees
     public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
         String sql = "SELECT * FROM Employee";
@@ -67,7 +65,7 @@ public class EmployeeDAO {
         return employees;
     }
     
-    // --- CRUD: READ by ID ---
+    // read the employee using its EID
     public Employee getEmployeeByEID(String EID) {
         String sql = "SELECT * FROM Employee WHERE EID = ?";
         try (Connection conn = getConnection();
@@ -85,7 +83,7 @@ public class EmployeeDAO {
         return null;
     }
     
-    // --- CRUD: UPDATE ---
+    // update the employee is in4
     public boolean updateEmployee(Employee employee) {
         String sql = "UPDATE Employee SET nameEmp = ?, posEmp = ?, salEmp = ?, hireDate = ? WHERE EID = ?";
         try (Connection conn = getConnection();
@@ -106,7 +104,7 @@ public class EmployeeDAO {
         }
     }
     
-    // --- CRUD: DELETE ---
+    // delete an employee
     public boolean deleteEmployee(String EID) {
         String sql = "DELETE FROM Employee WHERE EID = ?";
         try (Connection conn = getConnection();

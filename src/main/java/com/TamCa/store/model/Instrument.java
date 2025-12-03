@@ -9,7 +9,7 @@ public abstract class Instrument extends Product {
 
     public Instrument(
 
-        // 8 arguments for Product to go into super()
+        // parameter of Product
         String id, String namePro, String catePro, String origin, 
         String brand, int quantityInStock, Date importDate, double sellingPrice,
 
@@ -26,6 +26,7 @@ public abstract class Instrument extends Product {
         this.isElectric = isElectric;
     }
 
+    // getter and setter
     public String getCateIns(){
         return this.cateIns;
     }

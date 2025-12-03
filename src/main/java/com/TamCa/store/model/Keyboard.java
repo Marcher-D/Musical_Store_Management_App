@@ -9,14 +9,14 @@ public class Keyboard extends Instrument {
     private boolean hasLCD;     
 
     public Keyboard(
-            // 8 parameters for Product
+            // parameters for Product
             String id, String namePro, String catePro, String origin, 
             String brand, int quantityInStock, Date importDate, double sellingPrice,
             
-            // 4 parameters for Instrument
+            // parameters for Instrument
             String cateIns, String mateIns, String colorIns, boolean isElectric,
             
-            // 3 parameters for Keyboard
+            // parameters for Keyboard
             String cateKey, int keyNumKey, boolean hasLCD
     ) {
         super(id, namePro, catePro, origin, brand, quantityInStock, importDate, sellingPrice,
@@ -27,7 +27,7 @@ public class Keyboard extends Instrument {
         this.hasLCD = hasLCD;
     }
 
-    // --- Getters / Setters ---
+    // getter and setter
 
     public String getCateKey() {
         return cateKey;

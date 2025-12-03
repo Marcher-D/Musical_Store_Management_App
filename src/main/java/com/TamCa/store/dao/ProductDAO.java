@@ -6,13 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.sql.*;
 
-/**
- * ProductDAO: Class giao tiếp với Database cho sản phẩm.
- * Đã Refactor để dùng DBConnection.
- */
 public class ProductDAO {
 
-    // Table names
+    // tables' name in the db define here
     private static final String PRODUCT_TABLE = "Product";
     private static final String INSTRUMENT_TABLE = "Instrument"; 
     private static final String GUITAR_DETAIL_TABLE = "GuitarDetail";
@@ -21,20 +17,22 @@ public class ProductDAO {
     private static final String DRUMKIT_DETAIL_TABLE = "DrumKitDetail";
     private static final String ACCESSORY_DETAIL_TABLE = "AccessoryDetail";
     
-    // Counter for String ID
+    // counter for the ID generator!
     private int guitarCounter = 1;
     private int pianoCounter = 1;
     private int keyboardCounter = 1;
     private int drumCounter = 1;
     private int accessoryCounter = 1;
 
+    // the prefix of Product's ID
     private static final String GUITAR_PREFIX = "111";
     private static final String PIANO_PREFIX = "112";
     private static final String KEYBOARD_PREFIX = "113";
     private static final String DRUM_PREFIX = "114";
     private static final String ACCESSORY_PREFIX = "115"; 
     
-    // Common SQL JOIN command
+    // get the product's detail from the db 
+    // example if its a guitar -> anything with the guitar will have information, and others like piano's information will be NULL
     private static final String BASE_JOIN_SQL = String.format(
         "SELECT p.*, " +
         "i.mateIns AS i_mateIns, i.colorIns AS i_colorIns, i.isElectric AS i_isElectric, LOWER(TRIM(i.cateIns)) AS i_cateIns_clean, i.cateIns AS i_cateIns_raw, " + 
@@ -57,21 +55,20 @@ public class ProductDAO {
         initializeIdCounters();
     }
     
-    // --- DATABASE CONNECTION METHOD ---
+    // connect to the DB
     public Connection getConnection(boolean useDb) throws SQLException {
-        // Tham số useDb hiện tại không còn cần thiết vì ta luôn kết nối vào DB chính
-        // Giữ lại tham số để tránh lỗi compile ở các đoạn code cũ gọi hàm này
         return DBConnection.getConnection();
     }
     
-    // --- ID COUNTER INITIALIZATION ---
+    // ID count
     private void initializeIdCounters() {
+        //* to find the largest ID for type of product (?)
         String sql = "SELECT MAX(id) FROM " + PRODUCT_TABLE + " WHERE id LIKE ?";
         
         try (Connection conn = getConnection(true);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
-            // Helper interface for functional programming style in loop
+            //* BiConsumer is an interface that take 2 input (String prefix & IntConsumer setter)
             java.util.function.BiConsumer<String, java.util.function.IntConsumer> getMaxCounter = (prefix, setter) -> {
                 try {
                     pstmt.setString(1, prefix + "%");
@@ -81,8 +78,9 @@ public class ProductDAO {
                             try {
                                 int maxCount = Integer.parseInt(maxId.substring(3)) + 1;
                                 setter.accept(maxCount);
-                            } catch (NumberFormatException | StringIndexOutOfBoundsException ex) {
-                                // Ignore bad ID formats
+                            } 
+                            catch (NumberFormatException | StringIndexOutOfBoundsException ex) {
+                                // ignore the ID with bad format!
                             }
                         }
                     }
@@ -103,13 +101,13 @@ public class ProductDAO {
         }
     }
     
-    // --- COMMON METHODS: ID GENERATION AND DATE CONVERSION ---
-    
+    // convert utilDate to sqlDate
     private java.sql.Date convertUtilToSqlDate(Date utilDate) {
         if (utilDate == null) return null;
         return new java.sql.Date(utilDate.getTime());
     }
-    
+
+    // ID generator
     public String generateNextProductId(String prefix, String type) {
         int currentCounter;
         switch(type.toLowerCase()) {
@@ -136,8 +134,7 @@ public class ProductDAO {
         return prefix + formatCounter;
     }
     
-    // --- BASIC INSERT METHODS ---
-    
+    // insert method (Product)
     public void insertProduct(Product product) throws SQLException {
         String sql = String.format(
             "INSERT INTO %s (id, namePro, catePro, origin, brand, quantityInStock, importDate, sellingPrice) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", PRODUCT_TABLE);
@@ -157,7 +154,8 @@ public class ProductDAO {
             pstmt.executeUpdate();
         }
     }
-    
+
+    // insert Instru
     public void insertInstrument(Instrument instrument) throws SQLException {
         String sql = String.format(
             "INSERT INTO %s (product_id, cateIns, mateIns, colorIns, isElectric) VALUES (?, ?, ?, ?, ?)", INSTRUMENT_TABLE);
@@ -238,7 +236,7 @@ public class ProductDAO {
         }
     }
 
-    // --- HELPER METHOD: BUILD PRODUCT OBJECT FROM RESULTSET ---
+    // build product object from the result set
     private Product buildProductFromResultSet(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         String namePro = rs.getString("namePro");
@@ -299,8 +297,7 @@ public class ProductDAO {
         return null; 
     }
 
-    // --- DATA QUERY METHODS ---
-
+    // query methods are all here
     public List<Product> getAllItems() {
         List<Product> inventory = new ArrayList<>();
         

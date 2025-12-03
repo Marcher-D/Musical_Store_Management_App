@@ -7,17 +7,17 @@ public class Piano extends Instrument {
     private boolean hasPedal;
 
     public Piano(
-        // 8 parameters of Product
+        // parameters of Product
         String id, String namePro, String catePro, String origin, 
         String brand, int quantityInStock, Date importDate, double sellingPrice,
 
-        // 4 parameters of Instrument
+        // parameters of Instrument
         String cateIns,
         String mateIns,
         String colorIns,
         boolean isElectric,
 
-        // 3 parameters of Piano
+        // parameters of Piano
         String catePi,
         int keyNumPi,
         boolean hasPedal
@@ -30,6 +30,7 @@ public class Piano extends Instrument {
             this.hasPedal = hasPedal;
         }
 
+        // getter and setter
         public String getCatePi(){
             return this.catePi;
         }

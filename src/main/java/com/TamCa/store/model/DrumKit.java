@@ -9,17 +9,17 @@ public class DrumKit extends Instrument {
     String shellMaterial;
     
     public DrumKit(
-        // 8 parameters of Product
+        // parameters of Product
         String id, String namePro, String catePro, String origin, 
         String brand, int quantityInStock, Date importDate, double sellingPrice,
 
-        // 4 parameters of Instrument
+        // parameters of Instrument
         String cateIns,
         String mateIns,
         String colorIns,
         boolean isElectric,
 
-        // 4 parameters of DrumKit
+        // parameters of DrumKit
         int numOfDrumPieces,
         int numOfCymbals,
         String headMaterial,
@@ -33,6 +33,7 @@ public class DrumKit extends Instrument {
         this.shellMaterial = shellMaterial;
     }
 
+    // getter and setter
     public int getNumOfDrumPieces(){
         return this.numOfDrumPieces;
     }
@@ -67,7 +68,7 @@ public class DrumKit extends Instrument {
 
     @Override
     public String getDescription(){
-    return "Drum ID: " + getId() + // lấy từ lớp Product (lớp ông nội)
+    return "Drum ID: " + getId() + 
         "\n Brand: " + getBrand() +
         "\n Price: " + getSellingPrice() +
         "\n Category: " + getCateIns() +

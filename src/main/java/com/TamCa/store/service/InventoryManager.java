@@ -1,6 +1,4 @@
 package com.TamCa.store.service;
-
-// Import the DAOs from the new package
 import com.TamCa.store.dao.*;
 
 import com.TamCa.store.model.*; 
@@ -9,39 +7,33 @@ import java.util.Date;
 import java.util.Map;
 import java.sql.SQLException;
 
-/**
- * InventoryManager: Service/Business Logic Layer.
- * Responsible for business logic and coordinating between DAOs.
- */
+// Service Layer
 public class InventoryManager {
 
     // Declare DAO objects
     private final ProductDAO productDAO;
     private final AccountDAO accountDAO;
 
-    private final CustomerManager customerManager; 
-    private final EmployeeManager employeeManager; 
+    // private final CustomerManager customerManager; 
+    // private final EmployeeManager employeeManager; 
     private final OrderDAO orderDAO;
 
     public InventoryManager(){
-        // Initialize DAOs
+        // initialize DAOs
         this.productDAO = new ProductDAO();
         this.accountDAO = new AccountDAO();
         this.orderDAO = new OrderDAO();
 
-        this.customerManager = new CustomerManager(); 
-        this.employeeManager = new EmployeeManager(); 
+        // this.customerManager = new CustomerManager(); 
+        // this.employeeManager = new EmployeeManager(); 
     }
 
-    /**
-     * Checks login credentials by calling AccountDAO.
-     */
+    // check the login credential
     public String checkLogin(String username, String password) {
         return accountDAO.checkLogin(username, password);
     }
-    
-    // --- ADD PRODUCT FUNCTIONALITY (Uses ID generation logic and calls ProductDAO) ---
 
+    // add Product
     public void addNewGuitar(
         String namePro, String catePro, String origin, 
         String brand, int quantityInStock, Date importDate, double sellingPrice,
@@ -54,17 +46,17 @@ public class InventoryManager {
         String bodyShapeGui
     ) {
         try {
-            // 1. Generate ID (using logic from ProductDAO)
+            // generate ID
             String nextGuiId = productDAO.generateNextProductId("111", "guitar");
             
-            // 2. Create Guitar object
+            // create the Guitar object
             Guitar newGuitar = new Guitar(
                        nextGuiId, namePro, catePro, origin, brand,
                        quantityInStock, importDate, sellingPrice,
                        cateIns, mateIns, colorIns, isElectric,
                        cateGui, numOfString, bodyShapeGui);
 
-            // 3. Save to tables (call ProductDAO)
+            // insert into the db
             productDAO.insertProduct(newGuitar);
             productDAO.insertInstrument(newGuitar);
             productDAO.insertGuitarDetail(nextGuiId, cateGui, numOfString, bodyShapeGui);
@@ -76,6 +68,7 @@ public class InventoryManager {
         }
     }
     
+    //! work the same for add piano, keyboard or drum and accessorry
     public void addNewPiano(
         String namePro, String catePro, String origin, 
         String brand, int quantityInStock, Date importDate, double sellingPrice,
@@ -199,8 +192,7 @@ public class InventoryManager {
         }
     }
 
-    // --- QUERY AND UPDATE FUNCTIONALITY (Delegated to ProductDAO) ---
-
+    // querry and update using product.DAO
     public List<Product> getAllItems() {
         return productDAO.getAllItems();
     }
@@ -214,7 +206,6 @@ public class InventoryManager {
     }
 
     public void updateStock(String itemId, int newStock) {
-        // Business logic can be here (e.g., permission checks, quantity validation)
         productDAO.updateStock(itemId, newStock);
     }
 
@@ -246,7 +237,7 @@ public class InventoryManager {
         return productDAO.getMonthlyImportStats();
     }
 
-    // ORDER Delegation
+    // order delegation here
     public boolean createOrder(Order order) {
         return orderDAO.createOrder(order);
     }

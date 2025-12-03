@@ -15,6 +15,7 @@ public class Employee {
         this.hireDate = hireDate;
     }
 
+    // getter and setter
     final public String getNameEmp(){
         return this.nameEmp;
     }

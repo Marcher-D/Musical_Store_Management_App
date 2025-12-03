@@ -19,13 +19,9 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/view/Login.fxml"));
         Parent root = fxmlLoader.load();
-
-        // --- SỬA LỖI SHADOWING ---
-        // Cũ: Scene scene = new Scene(...) -> Biến local che biến static
-        // Mới: Gán trực tiếp vào biến static
         scene = new Scene(root, 800, 500); 
 
-        // Load CSS for styling
+        // load CSS for styling
         String css = this.getClass().getResource("/style.css").toExternalForm();
         scene.getStylesheets().add(css);
 
@@ -34,13 +30,10 @@ public class App extends Application {
         stage.show();
     }
 
-    /**
-     * Method test kết nối MySQL độc lập.
-     */
+    // testing the connection as start
     public static boolean testDbConnection() {
         System.out.println("--- Connecting to Database ---");
         
-        // Sử dụng DBConnection tập trung thay vì hardcode
         try (Connection conn = DBConnection.getConnection()) {
             
             System.out.println("SUCCESSFULLY CONNECTED!");
@@ -57,7 +50,6 @@ public class App extends Application {
     }
 
     public static void main(String[] args){
-        // Run connection test before starting JavaFX
         testDbConnection(); 
         launch();
     }

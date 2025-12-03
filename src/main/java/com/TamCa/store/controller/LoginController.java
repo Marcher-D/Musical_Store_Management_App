@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import javafx.scene.Node;
 
 import java.io.IOException;
-import java.sql.SQLException;
+// import java.sql.SQLException;
 
 public class LoginController {
 
@@ -24,7 +24,7 @@ public class LoginController {
     private InventoryManager inventoryManager;
 
     public LoginController() {
-        // Khởi tạo Service ngay khi Controller được tạo
+        // khởi tạo Service ngay khi Controller được tạo
         inventoryManager = new InventoryManager(); 
     }
 
@@ -38,12 +38,12 @@ public class LoginController {
             return;
         }
 
-        // Gọi DB kiểm tra
+        // call db to check
         String role = inventoryManager.checkLogin(user, pass);
 
         if (role != null) {
             System.out.println("Login Success! Role: " + role);
-            // CHUYỂN CẢNH SANG DASHBOARD
+            // change scene to Dashboard
             try {
                 switchToDashboard(event);
             } catch (IOException e) {
@@ -56,21 +56,21 @@ public class LoginController {
     }
 
     private void switchToDashboard(javafx.event.ActionEvent event) throws IOException {
-        // 1. Load Dashboard FXML
+        // load Dashboard FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Dashboard.fxml"));
         Parent root = loader.load();
 
-        // 2. Lấy Stage hiện tại (cái cửa sổ đang hiển thị)
+        // lấy Stage hiện tại (cái cửa sổ đang hiển thị)
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         
-        // 3. Tạo Scene mới (1000x700 là size của Dashboard)
+        // tạo Scene mới (1000x700 là size của Dashboard)
         Scene scene = new Scene(root, 1000, 700);
         
-        // 4. Nạp CSS (Quan trọng để lấy Gradient và styling chuẩn)
+        // nap CSS
         String css = getClass().getResource("/style.css").toExternalForm();
         scene.getStylesheets().add(css);
 
-        // 5. Đổi Scene và Show
+        // change scene and show
         stage.setScene(scene);
         stage.centerOnScreen();
         stage.show();

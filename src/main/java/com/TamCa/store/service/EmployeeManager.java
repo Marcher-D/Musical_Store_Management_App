@@ -1,15 +1,12 @@
 package com.TamCa.store.service;
 
 import com.TamCa.store.dao.EmployeeDAO;
-import com.TamCa.store.model.Customer;
+// import com.TamCa.store.model.Customer;
 import java.util.Date;
 import com.TamCa.store.model.Employee;
 import java.util.List;
 
-/**
- * EmployeeManager: Lớp Logic nghiệp vụ (Service Layer) cho Employee.
- * Xử lý các quy tắc kinh doanh liên quan đến Nhân viên (Ví dụ: kiểm tra quyền, định mức lương).
- */
+// act as a service layer for employee
 public class EmployeeManager {
     
     private final EmployeeDAO employeeDAO;

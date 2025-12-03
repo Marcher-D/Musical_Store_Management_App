@@ -15,7 +15,6 @@ public class Order implements OrderPersonnelData {
     private Customer customer;
     private List<OrderDetail> items; // Danh sách hàng
 
-    // Constructor
     public Order(String status, String deliAdd, Date sellDate, Date deliDate, Customer customer) {
         this.status = status;
         this.deliAdd = deliAdd;
@@ -25,13 +24,24 @@ public class Order implements OrderPersonnelData {
         this.items = new ArrayList<>(); 
     }
     
-    // Setters & Getters Order
-    public void setOrderId(int orderId) { this.orderId = orderId; }
-    public int getOrderId() { return orderId; }
+    // getter and setter
+    public void setOrderId(int orderId) { 
+        this.orderId = orderId; 
+    }
 
-    public void setItems(List<OrderDetail> items) { this.items = items; }
-    public List<OrderDetail> getItems() { return this.items; }
+    public int getOrderId() { 
+        return orderId; 
+    }
 
+    public void setItems(List<OrderDetail> items) { 
+        this.items = items; 
+    }
+
+    public List<OrderDetail> getItems() { 
+        return this.items; 
+    }
+
+    // method to get the total amount
     public double getTotalAmount() {
         double total = 0;
         for (OrderDetail item : items){
@@ -40,20 +50,33 @@ public class Order implements OrderPersonnelData {
         return total;
     }
 
-    // --- Interface Impl ---
+    // interface implement here
     @Override
     public String getCustomerCSN() { return (customer != null) ? customer.getCSN() : null; }
     @Override
     public String getEmployeeEID() { return "N/A"; }
 
-    // Getters Fields
-    public String getStatus() { return status; }
-    public String getDeliAdd() { return deliAdd; }
-    public Date getSellDate() { return sellDate; }
-    public Date getDeliDate() { return deliDate; }
-    public Customer getCustomer() { return customer; }
+    public String getStatus() { 
+        return this.status; 
+    }
 
-    // --- INNER CLASS: ORDER DETAIL (Nằm gọn trong Order) ---
+    public String getDeliAdd() { 
+        return this.deliAdd; 
+    }
+
+    public Date getSellDate() { 
+        return this.sellDate; 
+    }
+
+    public Date getDeliDate() { 
+        return this.deliDate; 
+    }
+
+    public Customer getCustomer() { 
+        return this.customer; 
+    }
+
+    // the Inner Class - OrderDetail
     public static class OrderDetail {
         private int orderDetailId; 
         private int orderId;
@@ -71,17 +94,46 @@ public class Order implements OrderPersonnelData {
             return this.quantity * this.priceAtSale;
         }
 
-        // Getters & Setters Detail
-        public Product getProduct() { return product; }
-        public void setProduct(Product product) { this.product = product; }
-        public int getQuantity() { return quantity; }
-        public void setQuantity(int quantity) { this.quantity = quantity; }
-        public double getPriceAtSale() { return priceAtSale; }
-        public void setPriceAtSale(double priceAtSale) { this.priceAtSale = priceAtSale; }
-        public int getOrderDetailId() { return orderDetailId; }
-        public void setOrderDetailId(int orderDetailId) { this.orderDetailId = orderDetailId; }
-        public int getOrderId() { return orderId; }
-        public void setOrderId(int orderId) { this.orderId = orderId; }
+        // getter and setter
+        public Product getProduct() { 
+            return product; 
+        }
+
+        public void setProduct(Product product) { 
+            this.product = product; 
+        }
+
+        public int getQuantity() { 
+            return quantity; 
+        }
+
+        public void setQuantity(int quantity) { 
+            this.quantity = quantity; 
+        }
+
+        public double getPriceAtSale() { 
+            return priceAtSale; 
+        }
+
+        public void setPriceAtSale(double priceAtSale) { 
+            this.priceAtSale = priceAtSale; 
+        }
+
+        public int getOrderDetailId() { 
+            return orderDetailId; 
+        }
+
+        public void setOrderDetailId(int orderDetailId) { 
+            this.orderDetailId = orderDetailId; 
+        }
+
+        public int getOrderId() { 
+            return orderId; 
+        }
+
+        public void setOrderId(int orderId) { 
+            this.orderId = orderId; 
+        }
     }
 }
 

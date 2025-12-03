@@ -1,23 +1,18 @@
 package com.TamCa.store.dao;
 
 import com.TamCa.store.model.Customer;
-// import com.TamCa.store.utils.DBConnection; // Đã loại bỏ import giả định này
+// import com.TamCa.store.utils.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * CustomerDAO: Lớp chịu trách nhiệm giao tiếp trực tiếp với bảng Customer trong Database.
- */
 public class CustomerDAO {
-    // Sử dụng lại logic kết nối từ ProductDAO/AccountDAO
     private Connection getConnection() throws SQLException {
-        // Gọi AccountDAO để lấy Connection, đảm bảo tính nhất quán về cấu hình DB
         return new AccountDAO().getConnection();
     }
     
-    // --- MAPPER: Chuyển đổi ResultSet thành đối tượng Customer ---
+    // mapper map ResultSet -> Custromer
     private Customer buildCustomerFromResultSet(ResultSet rs) throws SQLException {
         String nameCus = rs.getString("nameCus");
         String CSN = rs.getString("CSN");
@@ -28,7 +23,7 @@ public class CustomerDAO {
         return new Customer(nameCus, CSN, phoneNum, emailCus, addCus);
     }
     
-    // --- CRUD: CREATE ---
+    // add customer
     public boolean addCustomer(Customer customer) {
         String sql = "INSERT INTO Customer (CSN, nameCus, phoneNum, emailCus, addCus) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
@@ -49,7 +44,7 @@ public class CustomerDAO {
         }
     }
     
-    // --- CRUD: READ ALL ---
+    // list the customers down
     public List<Customer> getAllCustomers() {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT * FROM Customer";
@@ -67,7 +62,7 @@ public class CustomerDAO {
         return customers;
     }
     
-    // --- CRUD: READ by ID ---
+    // get customer by the CSN
     public Customer getCustomerByCSN(String CSN) {
         String sql = "SELECT * FROM Customer WHERE CSN = ?";
         try (Connection conn = getConnection();
@@ -85,7 +80,7 @@ public class CustomerDAO {
         return null;
     }
     
-    // --- CRUD: UPDATE (Chỉ cho phép cập nhật thông tin liên hệ/địa chỉ) ---
+    // update customer's information (just address & phone num only)
     public boolean updateCustomer(Customer customer) {
         String sql = "UPDATE Customer SET nameCus = ?, phoneNum = ?, emailCus = ?, addCus = ? WHERE CSN = ?";
         try (Connection conn = getConnection();
@@ -106,7 +101,7 @@ public class CustomerDAO {
         }
     }
     
-    // --- CRUD: DELETE ---
+    // delete customer
     public boolean deleteCustomer(String CSN) {
         String sql = "DELETE FROM Customer WHERE CSN = ?";
         try (Connection conn = getConnection();

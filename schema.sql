@@ -69,7 +69,6 @@ CREATE TABLE Employee (
     hireDate DATE
 );
 
--- [ĐÃ SỬA] Thêm liên kết với Employee để biết tài khoản nào của ai
 CREATE TABLE Account (
     username VARCHAR(50) PRIMARY KEY, 
     password VARCHAR(50) NOT NULL, 
@@ -86,7 +85,7 @@ CREATE TABLE Orders (
     deliDate DATE, 
     deliAdd VARCHAR(255), 
     customer_csn VARCHAR(20),
-    employee_eid VARCHAR(20), -- [ĐÃ SỬA] Thêm cột để biết nhân viên nào bán
+    employee_eid VARCHAR(20),
     FOREIGN KEY (customer_csn) REFERENCES Customer(csn) ON DELETE SET NULL,
     FOREIGN KEY (employee_eid) REFERENCES Employee(eid) ON DELETE SET NULL
 );
@@ -102,11 +101,10 @@ CREATE TABLE OrderDetail (
 );
 
 -- ==================================================
--- 3. DATA SEEDING (DỮ LIỆU MẪU)
+-- 3. DATA SEEDING
 -- ==================================================
 
 -- A. NHÂN VIÊN & TÀI KHOẢN TEAM
--- [ĐÃ SỬA] Map tài khoản với đúng mã nhân viên (E001, E002, E003)
 
 -- 1. Phan Anh Minh (Manager)
 INSERT INTO Employee VALUES ('E001', 'Phan Anh Minh', 'Manager', 5000, '2023-01-01');

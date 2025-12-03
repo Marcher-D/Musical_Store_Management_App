@@ -1,9 +1,9 @@
 package com.TamCa.store.controller;
 
 import com.TamCa.store.model.*;
-import com.TamCa.store.model.Order.OrderDetail;
+// import com.TamCa.store.model.Order.OrderDetail;
 import com.TamCa.store.service.*; 
-import com.TamCa.store.dao.*;
+// import com.TamCa.store.dao.*;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,16 +11,16 @@ import javafx.geometry.Pos;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
+// import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Rotate;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+// import javafx.scene.layout.StackPane;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+// import javafx.beans.property.SimpleDoubleProperty;
+// import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Map;
+// import java.util.Map;
 import java.util.Optional;
 
 public class DashboardController implements Initializable {
@@ -168,8 +168,8 @@ public class DashboardController implements Initializable {
     private Customer selectedCustomer = null;
 
     // DAOs (Để truy vấn)
-    private CustomerDAO customerDAO = new CustomerDAO();
-    private OrderDAO orderDAO = new OrderDAO();
+    // private CustomerDAO customerDAO = new CustomerDAO();
+    // private OrderDAO orderDAO = new OrderDAO();
 
 
     @Override

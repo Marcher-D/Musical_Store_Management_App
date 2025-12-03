@@ -21,7 +21,7 @@ public abstract class Product {
         this.sellingPrice = sellingPrice;
     }
 
-    // --- Getters ---
+    // getter and setter
     
     public String getId() {
         return this.id;
@@ -54,8 +54,6 @@ public abstract class Product {
     public Date getImportDate() {
         return this.importDate;
     }
-
-    // --- Setters ---
 
     public void setPrice(double price) {
         this.sellingPrice = price;

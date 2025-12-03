@@ -11,6 +11,7 @@ public class Customer {
         this.addCus = addCus;
     }
 
+    // getter and setter
     final public String getNameCus(){
         return this.nameCus;
     }
@@ -50,7 +51,7 @@ public class Customer {
     public void setAddCus(String addCus){
         this.addCus = addCus;
     }
-
+    
     public String getDescription(){
     return "Name of Customer: " + getNameCus() + 
         "\nCSN: " + getCSN() +

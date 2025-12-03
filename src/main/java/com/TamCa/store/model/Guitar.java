@@ -7,17 +7,17 @@ public class Guitar extends Instrument {
     private String bodyShapeGui;
 
     public Guitar(
-        // 8 parameters of Product
+        // parameters of Product
         String id, String namePro, String catePro, String origin, 
         String brand, int quantityInStock, Date importDate, double sellingPrice,
 
-        // 4 parameters of Instrument
+        // parameters of Instrument
         String cateIns,
         String mateIns,
         String colorIns,
         boolean isElectric,
 
-        // 3 parameters of Guitar
+        // parameters of Guitar
         String cateGui,
         int numOfString,
         String bodyShapeGui
@@ -31,7 +31,8 @@ public class Guitar extends Instrument {
             this.strNumGui = numOfString;
             this.bodyShapeGui = bodyShapeGui;
         }
-
+    
+    // getter and setter
     public String getGuiCategory(){
         return this.cateGui;
     }
