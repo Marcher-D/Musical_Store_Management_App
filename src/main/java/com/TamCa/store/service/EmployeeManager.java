@@ -15,20 +15,14 @@ public class EmployeeManager {
         this.employeeDAO = new EmployeeDAO();
     }
     
-    /**
-     * Tải tất cả nhân viên từ CSDL.
-     */
+    // load the employees from DB
     public List<Employee> getAllEmployees() {
         return employeeDAO.getAllEmployees();
     }
     
-    /**
-     * Thêm một nhân viên mới.
-     * Có thể thêm logic kiểm tra định mức lương, vị trí hợp lệ tại đây.
-     */
+    // add new Employee
     public boolean addNewEmployee(Employee employee) {
-        // Ví dụ: Business Rule: Kiểm tra mức lương tối thiểu
-        if (employee.getSalEmp() < 1000) { 
+        if (employee.getSalEmp() < 1000) { // the salary cannot below 1000 ^_^
             System.err.println("Business Rule Violated: Salary cannot be less than 1000.");
             return false;
         }
@@ -56,16 +50,12 @@ public class EmployeeManager {
         return String.format("E%03d", maxId + 1);
     }
     
-    /**
-     * Cập nhật thông tin nhân viên.
-     */
+    // update Employee's in4
     public boolean updateEmployee(Employee employee) {
         return employeeDAO.updateEmployee(employee);
     }
     
-    /**
-     * Xóa nhân viên theo EID.
-     */
+    // delete by EID
     public boolean deleteEmployee(String EID) {
         return employeeDAO.deleteEmployee(EID);
     }
